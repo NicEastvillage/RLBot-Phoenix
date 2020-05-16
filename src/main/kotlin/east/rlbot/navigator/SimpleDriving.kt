@@ -3,6 +3,7 @@ package east.rlbot.navigator
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.math.Vec3
+import java.awt.Color
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -22,6 +23,8 @@ class SimpleDriving(val bot: BaseBot) {
         val groundTarget = if (car.wheelContact && !car.isUpright)
             car.pos.flat().scaled(0.9)
         else target
+
+        bot.renderer.drawLine3d(Color.WHITE, car.pos, groundTarget)
 
         val carToTarget = groundTarget.minus(car.pos)
         val localTarget: Vec3 = car.toLocal(groundTarget)

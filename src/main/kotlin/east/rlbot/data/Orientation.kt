@@ -7,7 +7,7 @@ class Orientation private constructor(private val mat: Mat3) {
 
     val forward = mat.forward()
     val up = mat.up()
-    val left = mat.left()
+    val right = mat.right()
 
     /**
      * Returns target as seen from this orientation

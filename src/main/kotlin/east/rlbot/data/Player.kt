@@ -23,7 +23,7 @@ class Player(
     /**
      * Returns target as seen from this players perspective.
      * x is distance forward of the car,
-     * y is distance left of the car,
+     * y is distance right of the car,
      * z is distance above the car.
      */
     fun toLocal(target: Vec3): Vec3 = ori.toLocal(target - pos)

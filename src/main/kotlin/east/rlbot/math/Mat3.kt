@@ -70,7 +70,7 @@ class Mat3(private val matrix: FMatrixRMaj) {
         )
     }
 
-    fun left(): Vec3 {
+    fun right(): Vec3 {
         return Vec3(
                 this.matrix[0, 1],
                 this.matrix[1, 1],
