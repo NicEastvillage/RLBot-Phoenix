@@ -1,5 +1,6 @@
 package east.rlbot
 
+import east.rlbot.math.clamp
 import rlbot.ControllerState
 
 class OutputController : ControllerState {

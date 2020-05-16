@@ -1,10 +1,13 @@
 package east.rlbot
 
-import rlbot.ControllerState
-import rlbot.flat.GameTickPacket
+import east.rlbot.data.DataPack
 
-class PhoenixBot(index: Int) : BaseBot(index) {
-    override fun getOutput(request: GameTickPacket): OutputController {
-        return OutputController().withBoost().withSteer(0.5).withThrottle(-1.0)
+class PhoenixBot(index: Int, team: Int, name: String) : BaseBot(index, team, name) {
+    override fun getOutput(data: DataPack): OutputController {
+        return drive.towards(
+                data.ball.pos,
+                targetSpeed = 2300f,
+                boostMinimum = 0
+        )
     }
 }
