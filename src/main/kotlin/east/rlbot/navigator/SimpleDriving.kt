@@ -2,8 +2,10 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.maneuver.Dodge
 import east.rlbot.math.Vec3
 import java.awt.Color
+import kotlin.random.Random
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -13,6 +15,12 @@ class SimpleDriving(val bot: BaseBot) {
             targetSpeed: Float,
             boostMinimum: Int // don't use boost if we are below this amount
     ): OutputController {
+
+        bot.maneuver?.let { maneuver -> maneuver.exec(bot.data)?.let { out -> return out } }
+
+        if (bot.maneuver == null && Random.nextInt(100) == 0) {
+            bot.maneuver = Dodge()
+        }
 
         val controls = OutputController()
 
