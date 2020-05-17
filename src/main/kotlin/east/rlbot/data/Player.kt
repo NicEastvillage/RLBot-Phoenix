@@ -33,7 +33,7 @@ class Player(
         pos = Vec3(phy.location())
         vel = Vec3(phy.velocity())
         ori = Orientation.fromEuler(phy.rotation().pitch(), phy.rotation().yaw(), phy.rotation().roll())
-        // angVel =
+        angVel = Vec3(phy.angularVelocity().x(), phy.angularVelocity().y(), phy.angularVelocity().z())
 
         boost = player.boost()
         supersonic = player.isSupersonic()

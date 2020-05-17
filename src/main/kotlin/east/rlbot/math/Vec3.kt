@@ -1,5 +1,7 @@
 package east.rlbot.math
 
+import org.ejml.dense.row.CommonOps_FDRM
+import rlbot.gamestate.DesiredVector3
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.sqrt
@@ -99,6 +101,14 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return x * other.x + y * other.y + z * other.z
     }
 
+    infix fun dot(mat: Mat3): Vec3 {
+        val ret = Mat3.emptyMatrix()
+        val asMat = Mat3.toMatrix(this)
+        CommonOps_FDRM.transpose(asMat)
+        CommonOps_FDRM.mult(asMat, mat.internalMat, ret)
+        return Mat3.toVec(ret)
+    }
+
     fun flat(): Vec3 {
         return withZ(0)
     }
@@ -126,6 +136,8 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
     fun abs(): Vec3 {
         return Vec3(abs(x), abs(y), abs(z))
     }
+
+    fun toDesired(): DesiredVector3 = DesiredVector3(x, y, z)
 
     override fun toString(): String {
         return "(%.02f, %0.2f, %0.2f)".format(x, y, z)

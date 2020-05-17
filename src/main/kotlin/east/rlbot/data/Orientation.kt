@@ -3,7 +3,7 @@ package east.rlbot.data
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 
-class Orientation private constructor(private val mat: Mat3) {
+class Orientation(val mat: Mat3) {
 
     val forward = mat.forward()
     val up = mat.up()

@@ -8,81 +8,75 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-class Mat3(private val matrix: FMatrixRMaj) {
+class Mat3(internal val internalMat: FMatrixRMaj) {
 
     constructor(values: Array<FloatArray>): this(FMatrixRMaj(values))
 
     fun transpose(): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.transpose(matrix, ret)
+        CommonOps_FDRM.transpose(internalMat, ret)
         return Mat3(ret)
     }
 
     infix fun dot(vec: Vec3): Vec3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.mult(matrix, toMatrix(vec), ret)
+        CommonOps_FDRM.mult(internalMat, toMatrix(vec), ret)
         return toVec(ret)
     }
 
     infix fun dot(mat: Mat3): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.mult(matrix, mat.matrix, ret)
+        CommonOps_FDRM.mult(internalMat, mat.internalMat, ret)
         return Mat3(ret)
     }
 
-    infix fun Vec3.dot(mat: Mat3): Vec3 {
-        val ret = emptyMatrix()
-        CommonOps_FDRM.mult(toMatrix(this), mat.matrix, ret)
-        return toVec(ret)
-    }
-
     fun trace(): Float {
-        return CommonOps_FDRM.trace(matrix)
+        return CommonOps_FDRM.trace(internalMat)
     }
 
     fun get(row: Int, col: Int): Float {
-        return matrix.get(row, col)
+        return internalMat.get(row, col)
     }
 
     operator fun plus(mat: Mat3): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.add(matrix, mat.matrix, ret)
+        CommonOps_FDRM.add(internalMat, mat.internalMat, ret)
         return Mat3(ret)
     }
 
     operator fun times(value: Float): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.scale(value, matrix, ret)
+        CommonOps_FDRM.scale(value, internalMat, ret)
         return Mat3(ret)
     }
 
     operator fun times(other: Mat3): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.mult(matrix, other.matrix, ret)
+        CommonOps_FDRM.mult(internalMat, other.internalMat, ret)
         return Mat3(ret)
     }
 
     fun forward(): Vec3 {
         return Vec3(
-                this.matrix[0, 0],
-                this.matrix[1, 0],
-                this.matrix[2, 0]
+                this.internalMat[0, 0],
+                this.internalMat[1, 0],
+                this.internalMat[2, 0]
         )
     }
 
     fun right(): Vec3 {
         return Vec3(
-                this.matrix[0, 1],
-                this.matrix[1, 1],
-                this.matrix[2, 1]
+                this.internalMat[0, 1],
+                this.internalMat[1, 1],
+                this.internalMat[2, 1]
         )
     }
 
     fun up(): Vec3 {
         return Vec3(
-                this.matrix[0, 2],
-                this.matrix[1, 2],
-                this.matrix[2, 2]
+                this.internalMat[0, 2],
+                this.internalMat[1, 2],
+                this.internalMat[2, 2]
         )
     }
 
@@ -95,20 +89,26 @@ class Mat3(private val matrix: FMatrixRMaj) {
         return acos(0.5 * (trace - 1))
     }
 
+    fun tr(): Float = internalMat[0, 0] + internalMat[1, 1] + internalMat[2, 2]
+
     companion object {
         val IDENTITY = Mat3(FMatrixRMaj(arrayOf(floatArrayOf(1F, 0F, 0F), floatArrayOf(0F, 1F, 0F), floatArrayOf(0F, 0F, 1F))))
 
-        private fun emptyMatrix() = FMatrixRMaj(3, 3)
+        internal fun emptyMatrix() = FMatrixRMaj(3, 3)
 
-        private fun toMatrix(vec: Vec3): FMatrixRMaj {
+        internal fun toMatrix(vec: Vec3): FMatrixRMaj {
             return FMatrixRMaj(arrayOf(floatArrayOf(vec.x), floatArrayOf(vec.y), floatArrayOf(vec.z)))
         }
 
-        private fun toVec(matrix: FMatrixRMaj): Vec3 {
+        internal fun toVec(matrix: FMatrixRMaj): Vec3 {
             return Vec3(matrix.get(0), matrix.get(1), matrix.get(2))
         }
 
-        fun lookingTo(direction: Vec3, up: Vec3 = Vec3.UP): Mat3 {
+        fun lookingAt(from: Vec3, target: Vec3, up: Vec3 = Vec3.UP): Mat3 {
+            return lookingInDir(target - from)
+        }
+
+        fun lookingInDir(direction: Vec3, up: Vec3 = Vec3.UP): Mat3 {
             val forward = direction.normalised()
             val safeUp = if (abs(forward.z) == 1F && abs(up.z) == 1F) Vec3(x = 1.0) else up
             val leftward = (safeUp cross forward).normalised()
@@ -149,7 +149,7 @@ class Mat3(private val matrix: FMatrixRMaj) {
             val roofY = -CR * SY * SP + SR * CY
             val roofZ = CP * CR
 
-            return lookingTo(Vec3(noseX, noseY, noseZ), up = Vec3(roofX, roofY, roofZ))
+            return lookingInDir(Vec3(noseX, noseY, noseZ), up = Vec3(roofX, roofY, roofZ))
         }
     }
 }
