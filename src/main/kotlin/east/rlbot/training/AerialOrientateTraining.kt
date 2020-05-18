@@ -3,7 +3,10 @@ package east.rlbot.training
 import east.rlbot.BaseBot
 import east.rlbot.math.Vec3
 import rlbot.cppinterop.RLBotDll
-import rlbot.gamestate.*
+import rlbot.gamestate.BallState
+import rlbot.gamestate.CarState
+import rlbot.gamestate.GameState
+import rlbot.gamestate.PhysicsState
 import kotlin.random.Random
 
 class AerialOrientateTraining : Training {

@@ -4,7 +4,6 @@ import east.rlbot.data.DataPack
 import east.rlbot.maneuver.Maneuver
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.SimpleDriving
-import east.rlbot.training.AerialOrientateTraining
 import east.rlbot.training.Training
 import east.rlbot.util.SmartRenderer
 import rlbot.Bot
