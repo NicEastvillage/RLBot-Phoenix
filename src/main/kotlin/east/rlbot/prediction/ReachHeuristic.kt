@@ -13,7 +13,7 @@ data class ReachPrediction(val where: Vec3, val wen: Float)
  * Returns the time and position of the until the earliest moment where the given car can reach
  * the ball under certain assumptions.
  */
-fun earliestReachBall(
+fun reachHeuristic(
         data: DataPack,
         car: Player
 ) : ReachPrediction? {

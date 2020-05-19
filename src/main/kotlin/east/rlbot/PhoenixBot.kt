@@ -1,30 +1,16 @@
 package east.rlbot
 
-import east.rlbot.prediction.earliestReachBall
+import east.rlbot.states.BallChaseState
+import east.rlbot.states.UtilitySystem
 
 class PhoenixBot(index: Int, team: Int, name: String) : BaseBot(index, team, name) {
 
+    val utilitySystem = UtilitySystem(listOf(
+            BallChaseState()
+    ))
+
     override fun getOutput(): OutputController {
-
-        val car = data.me
-        val pred = earliestReachBall(data, car)
-        if (pred != null) {
-
-            val dist = car.pos.dist(pred.where)
-            val speed = dist / pred.wen
-
-            return drive.towards(
-                    pred.where,
-                    targetSpeed = speed,
-                    boostMinimum = 0
-            )
-
-        } else {
-            return drive.towards(
-                    data.ball.pos,
-                    targetSpeed = 2300f,
-                    boostMinimum = 0
-            )
-        }
+        val state = utilitySystem.eval(data)
+        return state.exec(data)
     }
 }
