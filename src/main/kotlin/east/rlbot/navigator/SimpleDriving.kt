@@ -18,10 +18,6 @@ class SimpleDriving(val bot: BaseBot) {
 
         bot.maneuver?.let { maneuver -> maneuver.exec(bot.data)?.let { out -> return out } }
 
-        if (bot.maneuver == null && Random.nextInt(100) == 0) {
-            bot.maneuver = Dodge()
-        }
-
         val controls = OutputController()
 
         val car = bot.data.me

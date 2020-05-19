@@ -11,5 +11,6 @@ class Dodge(
         TimedSingleOutputManeuver(firstJumpDuration, OutputController().withThrottle(1).withJump()),
         TimedSingleOutputManeuver(firstPauseDuration, OutputController().withThrottle(1)),
         TimedSingleOutputManeuver(secondJumpDuration, OutputController().withThrottle(1).withJump().withPitch(-1)),
-        TimedSingleOutputManeuver(secondPauseDuration, OutputController().withThrottle(1))
+        TimedSingleOutputManeuver(secondPauseDuration, OutputController().withThrottle(1)),
+        TimedOutputManeuver(1f) { data -> null.also { data.bot.maneuver = Recovery() } }
 )

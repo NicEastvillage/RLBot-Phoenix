@@ -42,6 +42,7 @@ class AerialMovement(val bot: BaseBot) {
                 .withPitch(Pp * pitchAng + Dp * pitchAngVel)
                 .withYaw(Py * yawAng + Dy * yawAngVel)
                 .withRoll((Pr * rollAng + Dr * rollAngVel) * rollScale)
+                .withThrottle(1f)
 
         return controls
     }
