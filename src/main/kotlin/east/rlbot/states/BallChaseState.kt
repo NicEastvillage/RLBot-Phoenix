@@ -22,14 +22,14 @@ class BallChaseState : UtilityState {
             return data.bot.drive.towards(
                     pred.where,
                     targetSpeed = speed,
-                    boostMinimum = 0
+                    boostPreservation = 0
             )
 
         } else {
             return data.bot.drive.towards(
                     data.ball.pos,
                     targetSpeed = 2300f,
-                    boostMinimum = 0
+                    boostPreservation = 0
             )
         }
     }

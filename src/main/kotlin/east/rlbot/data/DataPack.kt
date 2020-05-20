@@ -16,6 +16,9 @@ class DataPack(val bot: BaseBot, val index: Int) {
 
     val ball = Ball()
 
+    val myGoal = Goal.get(bot.team)
+    val enemyGoal = Goal.get(1 - bot.team)
+
     fun update(packet: GameTickPacket) {
 
         matchInfo.update(packet.gameInfo())

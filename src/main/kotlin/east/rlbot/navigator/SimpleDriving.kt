@@ -2,10 +2,8 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
-import east.rlbot.maneuver.Dodge
 import east.rlbot.math.Vec3
 import java.awt.Color
-import kotlin.random.Random
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -13,7 +11,7 @@ class SimpleDriving(val bot: BaseBot) {
     fun towards(
             target: Vec3,
             targetSpeed: Float,
-            boostMinimum: Int // don't use boost if we are below this amount
+            boostPreservation: Int // don't use boost if we are below this amount
     ): OutputController {
 
         bot.maneuver?.let { maneuver -> maneuver.exec(bot.data)?.let { out -> return out } }
@@ -40,7 +38,7 @@ class SimpleDriving(val bot: BaseBot) {
         if (currentSpeed < targetSpeed) {
             // We need to speed up
             controls.withThrottle(1.0)
-            if (targetSpeed > 1410 && currentSpeed + 60 < targetSpeed && facingTarget && car.boost > boostMinimum) {
+            if (targetSpeed > 1410 && currentSpeed + 60 < targetSpeed && facingTarget && car.boost > boostPreservation) {
                 controls.withBoost(true)
             }
         } else {
