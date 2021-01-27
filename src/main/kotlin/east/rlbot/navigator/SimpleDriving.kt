@@ -26,7 +26,7 @@ class SimpleDriving(val bot: BaseBot) {
             car.pos.flat().scaled(0.9)
         else target
 
-        bot.renderer.drawLine3d(Color.WHITE, car.pos, groundTarget)
+        bot.draw.drawLine3d(Color.WHITE, car.pos, groundTarget)
 
         val carToTarget = groundTarget.minus(car.pos)
         val localTarget: Vec3 = car.toLocal(groundTarget)

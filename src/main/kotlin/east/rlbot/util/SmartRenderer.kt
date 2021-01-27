@@ -33,7 +33,7 @@ class SmartRenderer(index: Int) : Renderer(index) {
     /**
      * Draw a cube with the given center and size
      */
-    fun drawCube(color: Color?, center: Vec3, size: Float) {
+    fun cube(color: Color, center: Vec3, size: Float) {
         val r = size / 2
         drawLine3d(color, center.plus(Vec3(-r, -r, -r)), center.plus(Vec3(-r, -r, r)))
         drawLine3d(color, center.plus(Vec3(r, -r, -r)), center.plus(Vec3(r, -r, r)))
@@ -52,7 +52,7 @@ class SmartRenderer(index: Int) : Renderer(index) {
     /**
      * Draw a cross with the given center and size
      */
-    fun drawCross(color: Color?, center: Vec3, size: Float) {
+    fun cross(color: Color, center: Vec3, size: Float) {
         val r = size / 2
         drawLine3d(color, center.plus(Vec3(-r, 0, 0)), center.plus(Vec3(r, 0, 0)))
         drawLine3d(color, center.plus(Vec3(0, -r, 0)), center.plus(Vec3(0, r, 0)))
@@ -62,7 +62,7 @@ class SmartRenderer(index: Int) : Renderer(index) {
     /**
      * Draw the next few seconds of ball prediction
      */
-    fun drawBallPrediction(color: Color, duration: Float) {
+    fun ballTrajectory(color: Color, duration: Float) {
         try {
             val ballPrediction = RLBotDll.getBallPrediction()
             var previousLocation: Vec3? = null

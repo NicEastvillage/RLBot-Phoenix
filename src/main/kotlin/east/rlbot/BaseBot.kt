@@ -13,7 +13,7 @@ import rlbot.flat.GameTickPacket
 abstract class BaseBot(private val index: Int, val team: Int, val name: String) : Bot {
 
     val data = DataPack(this, index)
-    val renderer = SmartRenderer(index)
+    val draw = SmartRenderer(index)
     val drive = SimpleDriving(this)
     val fly = AerialMovement(this)
     var maneuver: Maneuver? = null
@@ -26,10 +26,10 @@ abstract class BaseBot(private val index: Int, val team: Int, val name: String) 
         data.update(request)
 
         // Get output
-        renderer.startPacket()
+        draw.startPacket()
         training?.exec(this)
         val output = getOutput()
-        renderer.finishAndSendIfDifferent()
+        draw.finishAndSendIfDifferent()
 
         // Check if maneuver is done and can be discarded
         if (maneuver?.done == true) {
