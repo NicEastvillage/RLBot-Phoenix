@@ -21,14 +21,14 @@ class AerialOrientateTraining : Training {
     var ballPos = Vec3(0, 0, 100f)
 
     override fun exec(bot: BaseBot) {
-        if (bot.data.matchInfo.time >= nextTest) {
+        if (bot.data.match.time >= nextTest) {
             ballPos = CAR_POS + Vec3(
                     Random.nextFloat() * 2 - 1,
                     Random.nextFloat() * 2 - 1,
                     Random.nextFloat() * 2 - 1
-            ).normalised() * BALL_DIST
+            ).unit() * BALL_DIST
 
-            nextTest = bot.data.matchInfo.time + TEST_DURATION
+            nextTest = bot.data.match.time + TEST_DURATION
         }
 
         val gameState = GameState()

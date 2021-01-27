@@ -4,6 +4,7 @@ import east.rlbot.data.DataPack
 import east.rlbot.maneuver.Maneuver
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.SimpleDriving
+import east.rlbot.training.PlaneTest
 import east.rlbot.training.Training
 import east.rlbot.util.SmartRenderer
 import rlbot.Bot
@@ -20,7 +21,7 @@ abstract class BaseBot(private val index: Int, val team: Int, val name: String) 
 
     var lastOutput: OutputController = OutputController()
 
-    var training: Training? = null
+    var training: Training? = PlaneTest()
 
     override fun processInput(request: GameTickPacket): ControllerState {
         data.update(request)

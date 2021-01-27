@@ -1,5 +1,6 @@
 package east.rlbot.math
 
+import east.rlbot.data.Arena
 import org.ejml.dense.row.CommonOps_FDRM
 import rlbot.gamestate.DesiredVector3
 import kotlin.math.abs
@@ -90,7 +91,7 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return (x * x + y * y + z * z)
     }
 
-    fun normalised(): Vec3 {
+    fun unit(): Vec3 {
         if (isZero) {
             throw IllegalStateException("Cannot normalize a vector with length zero!")
         }
@@ -127,10 +128,23 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return Vec3(tx, ty, tz)
     }
 
+    fun dist(plane: Plane): Float {
+        return abs((this - plane.offset) dot plane.normal)
+    }
+
     fun projectToPlane(planeNormal: Vec3): Vec3 {
-        val d = this dot planeNormal
-        val antidote = planeNormal.scaled(-d)
+        val distance = this dot planeNormal
+        val antidote = planeNormal.scaled(-distance)
         return plus(antidote)
+    }
+
+    fun projectToPlane(plane: Plane): Vec3 {
+        return (this - plane.offset).projectToPlane(plane.normal) + plane.offset
+    }
+
+    fun projectToNearest(planes: List<Plane>): Vec3 {
+        val closest = planes.minBy { dist(it) }!!
+        return projectToPlane(closest)
     }
 
     fun abs(): Vec3 {

@@ -31,10 +31,10 @@ class SimpleDriving(val bot: BaseBot) {
         val carToTarget = groundTarget.minus(car.pos)
         val localTarget: Vec3 = car.toLocal(groundTarget)
 
-        val forwardDotTarget = car.ori.forward dot carToTarget.normalised()
+        val forwardDotTarget = car.ori.forward dot carToTarget.unit()
         val facingTarget = forwardDotTarget > 0.8
 
-        val currentSpeed = car.vel dot carToTarget.normalised()
+        val currentSpeed = car.vel dot carToTarget.unit()
         if (currentSpeed < targetSpeed) {
             // We need to speed up
             controls.withThrottle(1.0)
@@ -47,7 +47,7 @@ class SimpleDriving(val bot: BaseBot) {
             controls.withThrottle(0.25 - extraSpeed / 500)
         }
 
-        controls.withSteer(localTarget.normalised().y * 5)
+        controls.withSteer(localTarget.unit().y * 5)
 
         return controls
     }

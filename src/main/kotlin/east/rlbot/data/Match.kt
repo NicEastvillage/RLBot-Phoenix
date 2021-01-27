@@ -2,7 +2,7 @@ package east.rlbot.data
 
 import rlbot.flat.GameInfo
 
-class MatchInfo {
+class Match {
     var dt = 0.1666f
     var time = 0f
     var timeRemaining = 99999f

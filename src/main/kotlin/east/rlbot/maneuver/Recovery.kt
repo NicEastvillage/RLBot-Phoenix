@@ -17,7 +17,7 @@ class Recovery : Maneuver {
     fun findLandingRotation(data: DataPack): Mat3 {
         // TODO Does NOT find landing position right now
 
-        val dir = data.me.vel.flat().takeIf { !it.isZero }?.normalised() ?: Vec3(1f, 0f, 0f)
+        val dir = data.me.vel.flat().takeIf { !it.isZero }?.unit() ?: Vec3(1f, 0f, 0f)
         return Mat3.lookingInDir(dir)
     }
 }

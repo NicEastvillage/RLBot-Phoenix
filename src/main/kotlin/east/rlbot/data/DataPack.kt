@@ -5,7 +5,7 @@ import rlbot.flat.GameTickPacket
 
 class DataPack(val bot: BaseBot, val index: Int) {
 
-    val matchInfo = MatchInfo()
+    val match = Match()
 
     val me = Player(bot.index, bot.team, bot.name)
 
@@ -21,7 +21,7 @@ class DataPack(val bot: BaseBot, val index: Int) {
 
     fun update(packet: GameTickPacket) {
 
-        matchInfo.update(packet.gameInfo())
+        match.update(packet.gameInfo())
         ball.update(packet.ball())
 
         // Update players

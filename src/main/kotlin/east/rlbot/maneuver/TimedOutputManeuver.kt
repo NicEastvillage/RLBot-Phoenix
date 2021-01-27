@@ -13,10 +13,10 @@ open class TimedOutputManeuver(private val duration: Float, private val action: 
     override fun exec(data: DataPack): OutputController? {
         if (begin == null) {
             // Lazily set begin so we can use it in SteppedManeuver
-            begin = data.matchInfo.time
+            begin = data.match.time
             end = begin!! + duration
         }
-        done = end <= data.matchInfo.time
+        done = end <= data.match.time
         return action(data)
     }
 }
