@@ -11,6 +11,7 @@ import kotlin.math.sin
 class Mat3(internal val internalMat: FMatrixRMaj) {
 
     constructor(values: Array<FloatArray>): this(FMatrixRMaj(values))
+    constructor(values: FloatArray): this(FMatrixRMaj(values))
 
     fun transpose(): Mat3 {
         val ret = emptyMatrix()
@@ -44,9 +45,9 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
         return Mat3(ret)
     }
 
-    operator fun times(value: Float): Mat3 {
+    operator fun times(value: Number): Mat3 {
         val ret = emptyMatrix()
-        CommonOps_FDRM.scale(value, internalMat, ret)
+        CommonOps_FDRM.scale(value.toFloat(), internalMat, ret)
         return Mat3(ret)
     }
 
@@ -55,6 +56,7 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
         CommonOps_FDRM.mult(internalMat, other.internalMat, ret)
         return Mat3(ret)
     }
+
 
     fun forward(): Vec3 {
         return Vec3(

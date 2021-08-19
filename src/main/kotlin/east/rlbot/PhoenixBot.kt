@@ -12,8 +12,7 @@ class PhoenixBot(index: Int, team: Int, name: String) : BaseBot(index, team, nam
     ))
 
     override fun getOutput(): OutputController {
-        //val state = utilitySystem.eval(data)
-        //return state.exec(data)
-        return OutputController()
+        val state = utilitySystem.eval(data)
+        return state.exec(data)
     }
 }

@@ -44,6 +44,7 @@ fun reachHeuristic(
             i += 6
         }
     } catch (ignored: RLBotInterfaceException) {
+    } catch (ignored: IndexOutOfBoundsException) {
     }
 
     return null

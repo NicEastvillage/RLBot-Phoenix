@@ -3,6 +3,7 @@ package east.rlbot.training
 import east.rlbot.BaseBot
 import east.rlbot.data.Arena
 import east.rlbot.math.Vec3
+import east.rlbot.util.DebugDraw
 import java.awt.Color
 import kotlin.random.Random
 
@@ -16,8 +17,9 @@ class PlaneTest : Training {
     var projections = listOf<Vec3>()
 
     override fun exec(bot: BaseBot) {
+        if (bot.index != 0) return
         if (bot.data.match.time >= nextTest) {
-            points = List(150) {
+            points = List(80) {
                 Vec3(
                     Random.nextFloat() * 2 - 1,
                     Random.nextFloat() * 2 - 1,
@@ -38,16 +40,16 @@ class PlaneTest : Training {
             val point = points[i]
             val projection = projections[i]
 
-            bot.draw.cross(Color.CYAN, point, 50f)
-            bot.draw.cross(Color.GREEN, projection, 50f)
-            bot.draw.drawLine3d(Color.WHITE, point, projection)
+            bot.draw.cross(point, 50f, Color.CYAN)
+            bot.draw.cross(projection, 50f, Color.GREEN)
+            bot.draw.line(point, projection, Color.WHITE)
         }
 
         for (wall in Arena.ALL_WALLS) {
             val n = wall.offset + wall.normal * 300
-            bot.draw.cross(Color.RED, wall.offset, 50f)
-            bot.draw.cross(Color.MAGENTA, n, 50f)
-            bot.draw.drawLine3d(Color.YELLOW, wall.offset, n)
+            bot.draw.cross(wall.offset, 50f, Color.RED)
+            bot.draw.cross(n, 50f, Color.MAGENTA)
+            bot.draw.line(wall.offset, n, Color.YELLOW)
         }
     }
 }
