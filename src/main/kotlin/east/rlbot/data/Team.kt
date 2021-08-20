@@ -13,6 +13,8 @@ enum class Team(
     ORANGE(1, 1, Color.ORANGE, Color.RED, Color.YELLOW);
 
     companion object {
-        fun fromIndex(index: Int) = if (index == 0) BLUE else ORANGE
+        fun get(index: Int) = if (index == 0) BLUE else ORANGE
     }
+
+    fun other(): Team = if (index == 0) ORANGE else BLUE
 }

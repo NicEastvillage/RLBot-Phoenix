@@ -17,12 +17,12 @@ class DataPack(val bot: BaseBot, val index: Int) {
     val ball = Ball()
 
     val myGoal = Goal.get(bot.team)
-    val enemyGoal = Goal.get(1 - bot.team)
+    val enemyGoal = Goal.get(bot.team.other())
 
     fun update(packet: GameTickPacket) {
 
-        match.update(packet.gameInfo())
         ball.update(packet.ball())
+        match.update(packet.gameInfo(), ball)
 
         // Update players
         for (playerIndex in 0 until packet.playersLength()) {
@@ -30,7 +30,7 @@ class DataPack(val bot: BaseBot, val index: Int) {
 
             if (playerIndex >= allPlayers.size) {
                 // We found a new player
-                val newPlayer = if (playerIndex == index) me else Player(playerIndex, playerInfo.team(), playerInfo.name())
+                val newPlayer = if (playerIndex == index) me else Player(playerIndex, Team.get(playerInfo.team()), playerInfo.name())
 
                 // Add new player to relevant lists
                 allPlayers += newPlayer

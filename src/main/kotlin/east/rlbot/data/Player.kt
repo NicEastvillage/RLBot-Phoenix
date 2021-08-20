@@ -5,7 +5,7 @@ import rlbot.flat.PlayerInfo
 
 class Player(
         val index: Int,
-        val team: Int,
+        val team: Team,
         val name: String
 ) {
     lateinit var pos: Vec3

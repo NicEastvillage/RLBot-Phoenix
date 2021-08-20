@@ -15,8 +15,6 @@ class SimpleDriving(val bot: BaseBot) {
             boostPreservation: Int // don't use boost if we are below this amount
     ): OutputController {
 
-        bot.maneuver?.let { maneuver -> maneuver.exec(bot.data)?.let { out -> return out } }
-
         val controls = OutputController()
 
         val car = bot.data.me

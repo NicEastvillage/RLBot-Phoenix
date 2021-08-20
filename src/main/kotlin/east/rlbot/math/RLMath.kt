@@ -47,8 +47,3 @@ fun axisToRotation(axis: Vec3): Mat3 {
         Mat3.IDENTITY + sin(radians) * K + (1f - cos(radians)) * (K dot K)
     }
 }
-
-/**
- * returns sign of x, and 0 if x == 0
- */
-fun sign0(x: Number): Float = if (x == 0) x.toFloat() else sign(x.toFloat())
