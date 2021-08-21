@@ -3,6 +3,7 @@ package east.rlbot.states
 import east.rlbot.OutputController
 import east.rlbot.data.DataPack
 import east.rlbot.math.clamp
+import east.rlbot.navigator.ShotFinder
 import east.rlbot.prediction.reachHeuristic
 import east.rlbot.util.DebugDraw
 import java.awt.Color
@@ -14,6 +15,12 @@ class BallChaseState : UtilityState {
     }
 
     override fun exec(data: DataPack): OutputController {
+        val groundStrike = data.bot.shotFinder.findGroundStrike()
+        if (groundStrike != null) {
+            data.bot.maneuver = groundStrike
+            return groundStrike.exec(data)
+        }
+
         val car = data.me
         val pred = reachHeuristic(data, car)
         if (pred != null) {

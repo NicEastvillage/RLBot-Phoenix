@@ -1,6 +1,7 @@
 package east.rlbot.data
 
 import east.rlbot.BaseBot
+import east.rlbot.prediction.BallPredictionManager
 import rlbot.flat.GameTickPacket
 
 class DataPack(val bot: BaseBot, val index: Int) {
@@ -23,6 +24,8 @@ class DataPack(val bot: BaseBot, val index: Int) {
 
         ball.update(packet.ball())
         match.update(packet.gameInfo(), ball)
+
+        BallPredictionManager.update(match.time)
 
         // Update players
         for (playerIndex in 0 until packet.playersLength()) {

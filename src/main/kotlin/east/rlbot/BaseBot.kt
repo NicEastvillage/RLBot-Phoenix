@@ -4,6 +4,7 @@ import east.rlbot.data.DataPack
 import east.rlbot.data.Team
 import east.rlbot.maneuver.Maneuver
 import east.rlbot.navigator.AerialMovement
+import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
 import east.rlbot.training.KickOffTraining
 import east.rlbot.training.Training
@@ -19,6 +20,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
     val data = DataPack(this, index)
     val draw = DebugDraw(index)
     val drive = SimpleDriving(this)
+    val shotFinder = ShotFinder(this)
     val fly = AerialMovement(this)
     var maneuver: Maneuver? = null
 

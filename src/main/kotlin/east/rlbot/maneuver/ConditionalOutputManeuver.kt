@@ -2,6 +2,7 @@ package east.rlbot.maneuver
 
 import east.rlbot.OutputController
 import east.rlbot.data.DataPack
+import east.rlbot.util.DebugDraw
 
 open class ConditionalOutputManeuver(private val condition: (DataPack) -> Boolean, private val action: (DataPack) -> OutputController?) : Maneuver {
 

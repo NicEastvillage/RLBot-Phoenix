@@ -2,6 +2,7 @@ package east.rlbot.maneuver
 
 import east.rlbot.OutputController
 import east.rlbot.data.DataPack
+import east.rlbot.util.DebugDraw
 
 open class TimedOutputManeuver(private val duration: Float, private val action: (DataPack) -> OutputController?) : Maneuver {
 

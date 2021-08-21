@@ -2,6 +2,7 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.Player
 import east.rlbot.math.Vec3
 import east.rlbot.util.DebugDraw
 import java.awt.Color
@@ -25,8 +26,6 @@ class SimpleDriving(val bot: BaseBot) {
             car.pos.flat().scaled(0.9)
         else target
 
-        bot.draw.line(car.pos, groundTarget, Color.WHITE)
-
         val carToTarget = groundTarget.minus(car.pos)
         val localTarget: Vec3 = car.toLocal(groundTarget)
 
@@ -49,5 +48,12 @@ class SimpleDriving(val bot: BaseBot) {
         controls.withSteer(localTarget.unit().y * 5)
 
         return controls
+    }
+
+    fun reachable(pos: Vec3, time: Float): Boolean {
+        // TODO
+        val dist = bot.data.me.pos.dist(pos)
+        val speed = dist / time
+        return speed < 2300
     }
 }

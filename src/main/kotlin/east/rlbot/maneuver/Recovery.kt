@@ -4,6 +4,7 @@ import east.rlbot.OutputController
 import east.rlbot.data.DataPack
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
+import east.rlbot.util.DebugDraw
 
 class Recovery : Maneuver {
     override var done: Boolean = false
