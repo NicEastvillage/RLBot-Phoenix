@@ -32,7 +32,7 @@ fun reachHeuristic(
                 continue
             }
             val carToBall = position.minus(car.pos)
-            val carToBallDir = carToBall.unit()
+            val carToBallDir = carToBall.dir()
             val dist = carToBall.mag().toDouble()
             val speedTowardsBall = car.vel dot carToBallDir
             val averageSpeed = (speedTowardsBall + Car.MAX_SPEED) / 2.0f

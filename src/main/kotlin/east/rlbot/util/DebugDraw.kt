@@ -42,10 +42,10 @@ class DebugDraw(
 
     fun circle(center: Vec3, normal: Vec3, radius: Float, color: Color = this.color) {
 
-        var arm = (normal cross center).unit() * radius
+        var arm = (normal cross center).dir() * radius
         val pieces = radius.pow(0.7f).toInt() + 5
         val angle = 2 * Math.PI / pieces
-        val rotMat = axisToRotation(normal.unit() * angle)
+        val rotMat = axisToRotation(normal.dir() * angle)
 
         val points = mutableListOf(center + arm)
         for (i in 0 until pieces) {

@@ -6,6 +6,7 @@ import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.AccelerationLUT
 import east.rlbot.simulation.AccelerationModel
+import east.rlbot.simulation.timeSpentTurning
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -29,10 +30,10 @@ class SimpleDriving(val bot: BaseBot) {
         val carToTarget = groundTarget.minus(car.pos)
         val localTarget: Vec3 = car.toLocal(groundTarget)
 
-        val forwardDotTarget = car.ori.forward dot carToTarget.unit()
+        val forwardDotTarget = car.ori.forward dot carToTarget.dir()
         val facingTarget = forwardDotTarget > 0.8
 
-        val currentSpeed = car.vel dot carToTarget.unit()
+        val currentSpeed = car.vel dot carToTarget.dir()
         if (currentSpeed < targetSpeed) {
             // We need to speed up
             controls.withThrottle(1.0)
@@ -45,7 +46,7 @@ class SimpleDriving(val bot: BaseBot) {
             controls.withThrottle(0.25 - extraSpeed / 500)
         }
 
-        controls.withSteer(localTarget.unit().y * 5)
+        controls.withSteer(localTarget.dir().y * 5)
 
         return controls
     }
@@ -57,10 +58,15 @@ class SimpleDriving(val bot: BaseBot) {
         // TODO Consider turning
 
         val car = bot.data.me
-        // Average of speed towards target and speed in forward direction
-        var currentSpeed = car.vel.dot((pos - car.pos).unit()) + (car.vel.dot(car.ori.forward)) / 2f
+        var currentSpeed = car.forwardSpeed()
+
+        // Turning, assuming constant speed TODO Find distance left after turning
+        val dir = car.pos.dirTo(pos)
+        val angle = car.ori.forward.angle2D(dir)
+        val turnTime = timeSpentTurning(currentSpeed, angle)
+
         var distLeft = car.pos.dist2D(pos)
-        var timeSpent = 0f
+        var timeSpent = turnTime
 
         var accelerationResult: AccelerationLUT.LookupResult? = null
 

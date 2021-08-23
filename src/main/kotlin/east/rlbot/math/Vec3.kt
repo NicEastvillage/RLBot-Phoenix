@@ -100,12 +100,14 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return (x * x + y * y + z * z)
     }
 
-    fun unit(): Vec3 {
+    fun dir(): Vec3 {
         if (isZero) {
             throw IllegalStateException("Cannot normalize a vector with length zero!")
         }
         return this.scaled(1 / mag())
     }
+
+    fun dirTo(other: Vec3) = (other - this).dir()
 
     infix fun dot(other: Vec3): Float {
         return x * other.x + y * other.y + z * other.z

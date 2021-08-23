@@ -2,7 +2,6 @@ package east.rlbot.data
 
 import east.rlbot.math.Plane
 import east.rlbot.math.Vec3
-import kotlin.math.abs
 
 object Arena {
     const val LENGTH = 10240f
@@ -19,10 +18,10 @@ object Arena {
     val ORANGE_BACKBOARD = Plane(Vec3(y= LENGTH2), Vec3(y=-1))
     val LEFT_WALL = Plane(Vec3(x= WIDTH2), Vec3(x=-1)) // Blue POV
     val RIGHT_WALL = Plane(Vec3(x=-WIDTH2), Vec3(x=1)) // Blue POV
-    val BLUE_RIGHT_CORNER_WALL = Plane(Vec3(y=-CORNER_WALL_AX_INTERSECT), Vec3(x=1, y=1).unit())
-    val BLUE_LEFT_CORNER_WALL = Plane(Vec3(y=-CORNER_WALL_AX_INTERSECT), Vec3(x=-1, y=1).unit())
-    val ORANGE_RIGHT_CORNER_WALL = Plane(Vec3(y=CORNER_WALL_AX_INTERSECT), Vec3(x=-1, y=-1).unit())
-    val ORANGE_LEFT_CORNER_WALL = Plane(Vec3(y=CORNER_WALL_AX_INTERSECT), Vec3(x=1, y=-1).unit())
+    val BLUE_RIGHT_CORNER_WALL = Plane(Vec3(y=-CORNER_WALL_AX_INTERSECT), Vec3(x=1, y=1).dir())
+    val BLUE_LEFT_CORNER_WALL = Plane(Vec3(y=-CORNER_WALL_AX_INTERSECT), Vec3(x=-1, y=1).dir())
+    val ORANGE_RIGHT_CORNER_WALL = Plane(Vec3(y=CORNER_WALL_AX_INTERSECT), Vec3(x=-1, y=-1).dir())
+    val ORANGE_LEFT_CORNER_WALL = Plane(Vec3(y=CORNER_WALL_AX_INTERSECT), Vec3(x=1, y=-1).dir())
 
     val ALL_WALLS = listOf(
         GROUND,

@@ -111,10 +111,10 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
         }
 
         fun lookingInDir(direction: Vec3, up: Vec3 = Vec3.UP): Mat3 {
-            val forward = direction.unit()
+            val forward = direction.dir()
             val safeUp = if (abs(forward.z) == 1F && abs(up.z) == 1F) Vec3(x = 1.0) else up
-            val leftward = (safeUp cross forward).unit()
-            val upward = (forward cross leftward).unit()
+            val leftward = (safeUp cross forward).dir()
+            val upward = (forward cross leftward).dir()
 
             return Mat3(arrayOf(
                     floatArrayOf(forward.x, leftward.x, upward.x),

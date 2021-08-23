@@ -26,7 +26,7 @@ class AerialOrientateTraining : Training {
                     Random.nextFloat() * 2 - 1,
                     Random.nextFloat() * 2 - 1,
                     Random.nextFloat() * 2 - 1
-            ).unit() * BALL_DIST
+            ).dir() * BALL_DIST
 
             nextTest = bot.data.match.time + TEST_DURATION
         }

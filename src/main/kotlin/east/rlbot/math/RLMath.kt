@@ -38,7 +38,7 @@ fun axisToRotation(axis: Vec3): Mat3 {
     return if (radians < 0.000001)
         Mat3.IDENTITY
     else {
-        val axisU = axis.unit()
+        val axisU = axis.dir()
         val K = Mat3(floatArrayOf(
             0f, -axisU.z, axis.y,
             axis.z, 0f, -axisU.x,

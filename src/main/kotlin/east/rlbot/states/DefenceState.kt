@@ -9,7 +9,7 @@ class DefenceState : UtilityState {
     override fun utility(data: DataPack): Float {
         val goalToBall = data.ball.pos - data.myGoal.pos
         val goalToCar = data.me.pos - data.myGoal.pos
-        val offsite = (goalToBall.unit() dot goalToCar) / goalToBall.mag()
+        val offsite = (goalToBall.dir() dot goalToCar) / goalToBall.mag()
         return clamp(offsite - 0.2f, 0f, 1f)
     }
 

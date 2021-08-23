@@ -16,7 +16,7 @@ class ChipStrike(
     override var done: Boolean = false
 
     override fun exec(data: DataPack): OutputController {
-        val carToBallDir = (interceptBall.pos - data.me.pos).flat().unit()
+        val carToBallDir = (interceptBall.pos - data.me.pos).flat().dir()
         val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
         val speed = data.me.pos.dist(arrivePos) / timeLeft

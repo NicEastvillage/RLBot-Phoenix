@@ -28,6 +28,8 @@ class Car(
      */
     fun toLocal(target: Vec3): Vec3 = ori.toLocal(target - pos)
 
+    fun forwardSpeed(): Float = vel dot ori.forward
+
     fun update(player: PlayerInfo) {
         val phy = player.physics()
         pos = Vec3(phy.location())
