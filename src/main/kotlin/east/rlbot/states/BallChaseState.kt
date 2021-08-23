@@ -1,12 +1,10 @@
 package east.rlbot.states
 
 import east.rlbot.OutputController
+import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.math.clamp
-import east.rlbot.navigator.ShotFinder
-import east.rlbot.prediction.reachHeuristic
-import east.rlbot.util.DebugDraw
-import java.awt.Color
+import east.rlbot.simulation.reachHeuristic
 
 class BallChaseState : UtilityState {
 
@@ -37,7 +35,7 @@ class BallChaseState : UtilityState {
         } else {
             return data.bot.drive.towards(
                     data.ball.pos,
-                    targetSpeed = 2300f,
+                    targetSpeed = Car.MAX_SPEED,
                     boostPreservation = 0
             )
         }

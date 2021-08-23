@@ -3,7 +3,7 @@ package east.rlbot.data
 import east.rlbot.math.Vec3
 import rlbot.flat.PlayerInfo
 
-class Player(
+class Car(
         val index: Int,
         val team: Team,
         val name: String
@@ -41,5 +41,16 @@ class Player(
         demolished = player.isDemolished()
 
         isUpright = ori.up dot Vec3.UP > 0.55
+    }
+
+    companion object {
+        const val REST_HEIGHT = 17f
+        const val MAX_SPEED = 2300f
+        const val MAX_THROTTLE_SPEED = 2300f
+        const val COAST_ACC = 525f
+        const val BRAKE_ACC = 3500f
+        const val BOOST_BONUS_ACC = 991.66f
+
+        const val BOOST_USAGE_RATE = 33.3f
     }
 }

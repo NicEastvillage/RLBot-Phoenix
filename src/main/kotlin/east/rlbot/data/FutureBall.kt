@@ -1,7 +1,7 @@
 package east.rlbot.data
 
 import east.rlbot.math.Vec3
-import east.rlbot.prediction.BallPredictionManager
+import east.rlbot.simulation.BallPredictionManager
 import rlbot.flat.PredictionSlice
 
 data class FutureBall(

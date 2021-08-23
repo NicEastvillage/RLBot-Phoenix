@@ -1,4 +1,4 @@
-package east.rlbot.prediction
+package east.rlbot.simulation
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import java.io.File
@@ -10,7 +10,7 @@ import kotlin.math.sign
  */
 class AccelerationLUT(file: File) {
 
-    val entries: List<Entry> = csvReader().readAllWithHeader(file).map { row ->
+    private val entries: List<Entry> = csvReader().readAllWithHeader(file).map { row ->
         Entry(
             row["time"]!!.toFloat(),
             row["distance"]!!.toFloat(),
@@ -28,7 +28,7 @@ class AccelerationLUT(file: File) {
         speedLimit: Float? = null,
     ): LookupResult {
         // At least one limit expected
-        assert(timeLimit != null || distanceLimit != null || speedLimit != null) { "Not limit set" }
+        assert(timeLimit != null || distanceLimit != null || speedLimit != null) { "No limit set" }
 
         // limits must be positive
         if (timeLimit != null) assert(timeLimit > 0)

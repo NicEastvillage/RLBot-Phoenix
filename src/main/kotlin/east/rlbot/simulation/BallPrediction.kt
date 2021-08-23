@@ -1,4 +1,4 @@
-package east.rlbot.prediction
+package east.rlbot.simulation
 
 import east.rlbot.data.FutureBall
 import rlbot.cppinterop.RLBotDll

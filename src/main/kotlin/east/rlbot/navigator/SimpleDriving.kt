@@ -2,9 +2,10 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.Car
 import east.rlbot.math.Vec3
-import east.rlbot.prediction.AccelerationLUT
-import east.rlbot.prediction.AccelerationModel
+import east.rlbot.simulation.AccelerationLUT
+import east.rlbot.simulation.AccelerationModel
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -65,7 +66,7 @@ class SimpleDriving(val bot: BaseBot) {
 
         // Accelerate with boost
         if (boostAvailable > 0) {
-            val boostTime = boostAvailable / 33.3f
+            val boostTime = boostAvailable / Car.BOOST_USAGE_RATE
             accelerationResult = AccelerationModel.boost.simUntilLimit(currentSpeed, distanceLimit = distLeft, timeLimit = boostTime)
             distLeft -= accelerationResult.distance
             timeSpent += accelerationResult.duration
@@ -73,7 +74,7 @@ class SimpleDriving(val bot: BaseBot) {
         }
 
         // Accelerate with throttle
-        if (distLeft > 0f && currentSpeed <= 1410) {
+        if (distLeft > 0f && currentSpeed <= Car.MAX_THROTTLE_SPEED) {
             accelerationResult = AccelerationModel.throttle.simUntilLimit(currentSpeed, distanceLimit = distLeft)
             distLeft -= accelerationResult.distance
             timeSpent += accelerationResult.duration

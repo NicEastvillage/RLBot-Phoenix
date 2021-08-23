@@ -1,6 +1,7 @@
 package east.rlbot.states
 
 import east.rlbot.OutputController
+import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.math.clamp
 
@@ -15,7 +16,7 @@ class DefenceState : UtilityState {
     override fun exec(data: DataPack): OutputController {
         return data.bot.drive.towards(
                 data.myGoal.pos,
-                targetSpeed = 2300f,
+                targetSpeed = Car.MAX_SPEED,
                 boostPreservation = 100
         )
     }

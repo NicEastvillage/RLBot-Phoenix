@@ -1,7 +1,7 @@
-package east.rlbot.prediction
+package east.rlbot.simulation
 
 import east.rlbot.data.DataPack
-import east.rlbot.data.Player
+import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import rlbot.cppinterop.RLBotDll
 import rlbot.cppinterop.RLBotInterfaceException
@@ -15,7 +15,7 @@ data class ReachPrediction(val where: Vec3, val wen: Float)
  */
 fun reachHeuristic(
         data: DataPack,
-        car: Player
+        car: Car
 ) : ReachPrediction? {
 
     try {
@@ -35,7 +35,7 @@ fun reachHeuristic(
             val carToBallDir = carToBall.unit()
             val dist = carToBall.mag().toDouble()
             val speedTowardsBall = car.vel dot carToBallDir
-            val averageSpeed = (speedTowardsBall + 2300) / 2.0f
+            val averageSpeed = (speedTowardsBall + Car.MAX_SPEED) / 2.0f
             val travelTime = dist / averageSpeed
             if (travelTime < time) {
                 return ReachPrediction(position, time)

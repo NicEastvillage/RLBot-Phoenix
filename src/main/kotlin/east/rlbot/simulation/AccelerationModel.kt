@@ -1,4 +1,4 @@
-package east.rlbot.prediction
+package east.rlbot.simulation
 
 import java.io.File
 
