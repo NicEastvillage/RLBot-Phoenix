@@ -23,6 +23,9 @@ dependencies {
     // Efficient matrix library
     compile group: 'org.ejml', name: 'ejml-fdense', version: '0.38'
 
+    // CSV files
+    implementation 'com.github.doyaaaaaken:kotlin-csv-jvm:0.15.2'
+
     // This directory will be created and the interface dll copied into it at runtime.
     // The end result is that the interface dll will be on the classpath.
     runtime files(dllDirectory)

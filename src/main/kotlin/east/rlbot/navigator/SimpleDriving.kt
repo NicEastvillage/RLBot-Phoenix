@@ -2,10 +2,9 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
-import east.rlbot.data.Player
 import east.rlbot.math.Vec3
-import east.rlbot.util.DebugDraw
-import java.awt.Color
+import east.rlbot.prediction.AccelerationLUT
+import east.rlbot.prediction.AccelerationModel
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -50,10 +49,41 @@ class SimpleDriving(val bot: BaseBot) {
         return controls
     }
 
-    fun reachable(pos: Vec3, time: Float): Boolean {
-        // TODO
-        val dist = bot.data.me.pos.dist(pos)
-        val speed = dist / time
-        return speed < 2300
+    /**
+     * Estimate the minimum time needed to reach the given position from the current position
+     */
+    fun estimateTime2D(pos: Vec3, boostAvailable: Int = bot.data.me.boost): Float {
+        // TODO Consider turning
+
+        val car = bot.data.me
+        // Average of speed towards target and speed in forward direction
+        var currentSpeed = car.vel.dot((pos - car.pos).unit()) + (car.vel.dot(car.ori.forward)) / 2f
+        var distLeft = car.pos.dist2D(pos)
+        var timeSpent = 0f
+
+        var accelerationResult: AccelerationLUT.LookupResult? = null
+
+        // Accelerate with boost
+        if (boostAvailable > 0) {
+            val boostTime = boostAvailable / 33.3f
+            accelerationResult = AccelerationModel.boost.simUntilLimit(currentSpeed, distanceLimit = distLeft, timeLimit = boostTime)
+            distLeft -= accelerationResult.distance
+            timeSpent += accelerationResult.duration
+            currentSpeed = accelerationResult.endSpeed
+        }
+
+        // Accelerate with throttle
+        if (distLeft > 0f && currentSpeed <= 1410) {
+            accelerationResult = AccelerationModel.throttle.simUntilLimit(currentSpeed, distanceLimit = distLeft)
+            distLeft -= accelerationResult.distance
+            timeSpent += accelerationResult.duration
+            currentSpeed = accelerationResult.endSpeed
+        }
+
+        // If distance was not reached during acceleration, travel remain distance with constant speed
+        if (accelerationResult == null || accelerationResult.distanceLimitReached)
+            timeSpent += distLeft / currentSpeed
+
+        return timeSpent * 1.05f
     }
 }

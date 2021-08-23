@@ -1,6 +1,5 @@
 package east.rlbot.math
 
-import east.rlbot.data.Arena
 import org.ejml.dense.row.CommonOps_FDRM
 import rlbot.gamestate.DesiredVector3
 import kotlin.math.abs
@@ -83,6 +82,16 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return (xDiff * xDiff + yDiff * yDiff + zDiff * zDiff)
     }
 
+    fun dist2D(other: Vec3): Float {
+        return sqrt(dist2DSqr(other))
+    }
+
+    fun dist2DSqr(other: Vec3): Float {
+        val xDiff = x - other.x
+        val yDiff = y - other.y
+        return (xDiff * xDiff + yDiff * yDiff)
+    }
+
     fun mag(): Float {
         return sqrt(magSqr())
     }
@@ -114,11 +123,15 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return withZ(0)
     }
 
-    fun angle(v: Vec3): Float {
+    fun angle(other: Vec3): Float {
         val mag2 = magSqr()
-        val vmag2 = v.magSqr()
-        val dot = this dot v
+        val vmag2 = other.magSqr()
+        val dot = this dot other
         return acos(dot / sqrt(mag2 * vmag2))
+    }
+
+    fun angle2D(other: Vec3): Float {
+        return flat().angle(other.flat())
     }
 
     infix fun cross(v: Vec3): Vec3 {

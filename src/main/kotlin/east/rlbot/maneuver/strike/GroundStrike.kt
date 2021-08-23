@@ -16,7 +16,7 @@ class GroundStrike(
 
     override fun exec(data: DataPack): OutputController {
         val carToBallDir = (interceptBall.pos - data.me.pos).flat().unit()
-        val arrivePos = interceptBall.pos - carToBallDir * 100
+        val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(17f)
         val timeLeft = interceptBall.time - data.match.time
         val speed = data.me.pos.dist(arrivePos) / timeLeft
         done = timeLeft <= 0 || !interceptBall.valid()
@@ -29,8 +29,9 @@ class GroundStrike(
 
     companion object {
         fun from(bot: BaseBot, ball: FutureBall): GroundStrike? {
-            if (ball.pos.z > 180 || abs(ball.vel.z) > 240) return null
-            if (!bot.drive.reachable(ball.pos.flat(), ball.time - bot.data.match.time)) return null
+            if (ball.pos.z > 190 - abs(ball.vel.z) / 5f || abs(ball.vel.z) > 280) return null
+            if (ball.vel.flat().mag() > 400f && ball.vel.angle2D(bot.data.me.vel) < 1f) return null
+            if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) return null
             return GroundStrike(ball)
         }
     }
