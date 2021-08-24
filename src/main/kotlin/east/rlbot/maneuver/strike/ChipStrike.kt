@@ -20,7 +20,7 @@ class ChipStrike(
         val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
         val speed = data.me.pos.dist(arrivePos) / timeLeft
-        done = timeLeft <= 0 || !interceptBall.valid()
+        done = timeLeft <= 0 || speed > Car.MAX_SPEED + 10f || (speed > Car.MAX_THROTTLE_SPEED + 10f && data.me.boost == 0) || !interceptBall.valid()
 
         data.bot.draw.crossAngled(interceptBall.pos, 85f, Color.GREEN)
         data.bot.draw.line(data.me.pos, arrivePos, Color.CYAN)

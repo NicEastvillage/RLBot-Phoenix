@@ -54,5 +54,11 @@ class Car(
         const val BOOST_BONUS_ACC = 991.66f
 
         const val BOOST_USAGE_RATE = 33.3f
+
+        const val WALL_STICKY_FORCE = 325f
+        const val WALL_STICKY_TIME = 3/120f
+        const val JUMP_IMPULSE = 292f
+        const val JUMP_HOLD_FORCE = 292f * 5
+        const val MAX_JUMP_HOLD_TIME = 0.2f
     }
 }
