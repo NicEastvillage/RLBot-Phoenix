@@ -2,6 +2,7 @@ package east.rlbot.maneuver
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import kotlin.math.sign
@@ -26,5 +27,5 @@ class SimpleKickOff() : SteppedManeuver(
         val dist = it.bot.data.me.pos.dist(it.bot.data.ball.pos)
         it.bot.drive.towards(Vec3(y=it.bot.team.ysign * (dist * 0.5f - 500f + Random.nextFloat() * 10f)), Car.MAX_SPEED, 0)
     }),
-    Dodge()
+    Dodge(Vec3(z=Ball.RADIUS))
 )

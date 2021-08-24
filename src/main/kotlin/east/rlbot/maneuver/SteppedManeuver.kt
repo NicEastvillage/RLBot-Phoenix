@@ -2,7 +2,6 @@ package east.rlbot.maneuver
 
 import east.rlbot.OutputController
 import east.rlbot.data.DataPack
-import east.rlbot.util.DebugDraw
 
 open class SteppedManeuver(val sequence: List<Maneuver>) : Maneuver {
 
@@ -16,10 +15,9 @@ open class SteppedManeuver(val sequence: List<Maneuver>) : Maneuver {
         while (!done) {
             val current = sequence[currentIndex]
             if (!current.done) {
-                return current.exec(data)
-            } else {
-                currentIndex++
+                current.exec(data)?.let { return it }
             }
+            currentIndex++
         }
         return null
     }

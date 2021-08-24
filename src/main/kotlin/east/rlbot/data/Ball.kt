@@ -12,4 +12,8 @@ class Ball {
         pos = Vec3(phy.location())
         vel = Vec3(phy.velocity())
     }
+
+    companion object {
+        const val RADIUS = 92.1f
+    }
 }

@@ -23,7 +23,7 @@ class Match {
         matchEnded = info.isMatchEnded()
         isTimerPausedDueToKickOff = info.isKickoffPause()
 
-        val isKickOffNow = ball.pos.flat() == Vec3.ZERO
+        val isKickOffNow = ball.pos.flat() == Vec3.ZERO && isTimerPausedDueToKickOff
         isFirstFrameOfKickOff = !isKickOff && isKickOffNow
         isKickOff = isKickOffNow
     }

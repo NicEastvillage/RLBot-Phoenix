@@ -1,16 +1,30 @@
 package east.rlbot.maneuver
 
 import east.rlbot.OutputController
+import east.rlbot.math.Vec3
+import kotlin.math.sign
 
 class Dodge(
-        firstJumpDuration: Float = 0.08f,
-        firstPauseDuration: Float = 0.12f,
-        secondJumpDuration: Float = 0.08f,
-        secondPauseDuration: Float = 0.4f
+    target: Vec3?,
+    firstJumpDuration: Float = 0.15f,
+    firstPauseDuration: Float = 0.04f,
+    secondJumpDuration: Float = 0.08f,
+    secondPauseDuration: Float = 0.4f
 ) : SteppedManeuver(
-        TimedSingleOutputManeuver(firstJumpDuration, OutputController().withThrottle(1).withJump()),
-        TimedSingleOutputManeuver(firstPauseDuration, OutputController().withThrottle(1)),
-        TimedSingleOutputManeuver(secondJumpDuration, OutputController().withThrottle(1).withJump().withPitch(-1)),
-        TimedSingleOutputManeuver(secondPauseDuration, OutputController().withThrottle(1)),
-        TimedOutputManeuver(1f) { data -> null.also { data.bot.maneuver = Recovery() } }
+    TimedSingleOutputManeuver(firstJumpDuration, OutputController().withThrottle(1).withJump()),
+    TimedSingleOutputManeuver(firstPauseDuration, OutputController().withThrottle(1)),
+    TimedOutputManeuver(secondJumpDuration) { data ->
+        if (target == null) {
+            OutputController().withThrottle(1f).withJump().withPitch(-1f)
+        } else {
+            val dir = data.me.toLocal(target).flat().dir()
+            OutputController()
+                .withThrottle(1f)
+                .withJump()
+                .withPitch(-dir.x)
+                .withYaw(data.me.ori.up.z.sign * dir.y)
+        }
+    },
+    TimedSingleOutputManeuver(secondPauseDuration, OutputController().withThrottle(1)),
+    Recovery()
 )

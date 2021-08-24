@@ -12,9 +12,11 @@ class PhoenixBot(index: Int, team: Int, name: String) : BaseBot(index, team, nam
             DefenceState()
     ))
 
-    override fun getOutput(): OutputController {
-        if (data.match.isFirstFrameOfKickOff) decideKickoff(this)
+    override fun onKickoffBegin() {
+        decideKickoff(this)
+    }
 
+    override fun getOutput(): OutputController {
         val state = utilitySystem.eval(data)
         return state.exec(data)
     }

@@ -12,6 +12,7 @@ import east.rlbot.util.DebugDraw
 import rlbot.Bot
 import rlbot.ControllerState
 import rlbot.flat.GameTickPacket
+import java.awt.Color
 
 abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String) : Bot {
 
@@ -31,6 +32,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()
         data.update(request)
+        if (data.match.isFirstFrameOfKickOff) onKickoffBegin()
 
         // Get output
         training?.exec(this)
@@ -48,6 +50,8 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
 
         return output
     }
+
+    abstract fun onKickoffBegin()
 
     abstract fun getOutput(): OutputController
 
