@@ -1,6 +1,7 @@
 package east.rlbot
 
 import east.rlbot.maneuver.decideKickoff
+import east.rlbot.simulation.JumpModel
 import east.rlbot.states.BallChaseState
 import east.rlbot.states.DefenceState
 import east.rlbot.states.UtilitySystem

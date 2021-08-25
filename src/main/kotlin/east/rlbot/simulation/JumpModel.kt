@@ -34,7 +34,7 @@ object JumpModel {
             if (time < Car.WALL_STICKY_TIME)
                 velZ -= Car.WALL_STICKY_FORCE * dt
 
-            velZ += Physics.GRAVITY.z
+            velZ += Physics.GRAVITY.z * dt
 
             val newHeight = prevHeight + velZ * dt
             time += dt

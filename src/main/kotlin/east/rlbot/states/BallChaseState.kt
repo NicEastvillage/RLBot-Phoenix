@@ -13,10 +13,10 @@ class BallChaseState : UtilityState {
     }
 
     override fun exec(data: DataPack): OutputController {
-        val groundStrike = data.bot.shotFinder.findGroundStrike()
-        if (groundStrike != null) {
-            data.bot.maneuver = groundStrike
-            return groundStrike.exec(data)
+        val strike = data.bot.shotFinder.findSoonestStrike()
+        if (strike != null) {
+            data.bot.maneuver = strike
+            return strike.exec(data)
         }
 
         val car = data.me

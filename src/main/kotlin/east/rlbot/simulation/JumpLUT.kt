@@ -1,6 +1,9 @@
 package east.rlbot.simulation
 
 import east.rlbot.data.Car
+import east.rlbot.math.Vec3
+import east.rlbot.util.DebugDraw
+import java.awt.Color
 import kotlin.math.absoluteValue
 import kotlin.math.min
 import kotlin.math.sign
@@ -51,6 +54,10 @@ class JumpLUT(private val entries: List<Float>, val dt: Float) {
     }
 
     fun maxHeight() = entries.last()
+
+    fun render(draw: DebugDraw) {
+        draw.polyline(entries.chunked(6).map { it.first() }.withIndex().map { (i, height) -> Vec3(x=i*15f,z=height) }, Color.WHITE)
+    }
 
     data class LookupResult(
         val time: Float,

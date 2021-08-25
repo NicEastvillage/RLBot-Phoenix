@@ -7,7 +7,7 @@ import kotlin.math.sign
 class Dodge(
     target: Vec3?,
     firstJumpDuration: Float = 0.15f,
-    firstPauseDuration: Float = 0.04f,
+    firstPauseDuration: Float = 0.03f,
     secondJumpDuration: Float = 0.08f,
     secondPauseDuration: Float = 0.4f
 ) : SteppedManeuver(

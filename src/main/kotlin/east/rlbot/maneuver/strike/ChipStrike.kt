@@ -10,8 +10,8 @@ import java.awt.Color
 import kotlin.math.abs
 
 class ChipStrike(
-    var interceptBall: FutureBall,
-) : Maneuver {
+    interceptBall: FutureBall,
+) : Strike(interceptBall) {
 
     override var done: Boolean = false
 
@@ -28,8 +28,8 @@ class ChipStrike(
         return data.bot.drive.towards(arrivePos, speed, 0)
     }
 
-    companion object {
-        fun from(bot: BaseBot, ball: FutureBall): ChipStrike? {
+    companion object Factory : StrikeFactory {
+        override fun tryCreate(bot: BaseBot, ball: FutureBall): ChipStrike? {
             if (ball.pos.z > 190 - abs(ball.vel.z) / 5f || abs(ball.vel.z) > 280) return null
             if (ball.vel.flat().mag() > 400f && ball.vel.angle2D(bot.data.me.vel) < 1f) return null
             if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) return null
