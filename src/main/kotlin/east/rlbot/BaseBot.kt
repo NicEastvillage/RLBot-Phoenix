@@ -6,13 +6,11 @@ import east.rlbot.maneuver.Maneuver
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
-import east.rlbot.training.KickOffTraining
 import east.rlbot.training.Training
 import east.rlbot.util.DebugDraw
 import rlbot.Bot
 import rlbot.ControllerState
 import rlbot.flat.GameTickPacket
-import java.awt.Color
 
 abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String) : Bot {
 
@@ -32,6 +30,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()
         data.update(request)
+        if (data.me.isFirstFrameOfBeingDemolished) onDemolished()
         if (data.match.isFirstFrameOfKickOff) onKickoffBegin()
 
         // Get output
@@ -52,6 +51,10 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
     }
 
     abstract fun onKickoffBegin()
+
+    open fun onDemolished() {
+        maneuver = null
+    }
 
     abstract fun getOutput(): OutputController
 

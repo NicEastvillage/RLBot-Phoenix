@@ -17,6 +17,7 @@ class Car(
     var supersonic = false
     var wheelContact = false
     var demolished = false
+    var isFirstFrameOfBeingDemolished = false
 
     var isUpright = true
 
@@ -40,7 +41,9 @@ class Car(
         boost = player.boost()
         supersonic = player.isSupersonic()
         wheelContact = player.hasWheelContact()
+        val wasDemolished = demolished
         demolished = player.isDemolished()
+        isFirstFrameOfBeingDemolished = !wasDemolished && demolished
 
         isUpright = ori.up dot Vec3.UP > 0.55
     }
