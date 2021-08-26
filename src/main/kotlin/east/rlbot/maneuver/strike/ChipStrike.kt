@@ -6,6 +6,7 @@ import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.Maneuver
+import east.rlbot.maneuver.Recovery
 import java.awt.Color
 import kotlin.math.abs
 
@@ -16,6 +17,10 @@ class ChipStrike(
     override var done: Boolean = false
 
     override fun exec(data: DataPack): OutputController {
+
+        if (!data.me.wheelContact)
+            data.bot.maneuver = Recovery()
+
         val carToBallDir = (interceptBall.pos - data.me.pos).flat().dir()
         val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time

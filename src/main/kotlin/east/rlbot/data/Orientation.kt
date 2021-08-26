@@ -14,6 +14,11 @@ class Orientation(val mat: Mat3) {
      */
     fun toLocal(target: Vec3): Vec3 = mat.transpose() dot target
 
+    /**
+     * Returns local target in global orientation
+     */
+    fun toGlobal(target: Vec3): Vec3 = mat dot target
+
     companion object {
         fun fromEuler(pitch: Float, yaw: Float, roll: Float): Orientation {
             return Orientation(Mat3.eulerToRotation(pitch, yaw, roll))

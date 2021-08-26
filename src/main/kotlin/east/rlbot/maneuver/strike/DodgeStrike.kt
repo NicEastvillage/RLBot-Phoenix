@@ -7,6 +7,7 @@ import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.Dodge
+import east.rlbot.maneuver.Recovery
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
 import java.awt.Color
@@ -18,8 +19,12 @@ class DodgeStrike(
     override var done: Boolean = false
 
     override fun exec(data: DataPack): OutputController {
-        // Find speed
         val car = data.me
+
+        if (!car.wheelContact)
+            data.bot.maneuver = Recovery()
+
+        // Find speed
         val carToBallDir = (interceptBall.pos - car.pos).flat().dir()
         val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
@@ -43,18 +48,9 @@ class DodgeStrike(
 
     companion object Factory : StrikeFactory {
         override fun tryCreate(bot: BaseBot, ball: FutureBall): DodgeStrike? {
-            if (ball.pos.z < Ball.RADIUS + 30f || JumpModel.single.maxHeight() < ball.pos.z) {
-                if (bot.index == 0) bot.draw.rect3D(ball.pos, 3, 3, color = Color.RED)
-                return null
-            }
-            if (ball.vel.flat().mag() > 500f && ball.vel.angle2D(bot.data.me.vel) < 1f) {
-                if (bot.index == 0) bot.draw.rect3D(ball.pos, 3, 3, color = Color.ORANGE)
-                return null
-            }
-            if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) {
-                if (bot.index == 0) bot.draw.rect3D(ball.pos, 3, 3, color = Color.YELLOW)
-                return null
-            }
+            if (JumpModel.single.maxHeight() + Ball.RADIUS / 3f < ball.pos.z) return null
+            if (ball.vel.flat().mag() > 500f && ball.vel.angle2D(bot.data.me.vel) < 1f) return null
+            if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) return null
             return DodgeStrike(ball)
         }
     }

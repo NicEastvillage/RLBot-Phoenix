@@ -1,5 +1,7 @@
 package east.rlbot.util
 
+import east.rlbot.data.Orientation
+import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
 import east.rlbot.math.axisToRotation
 import east.rlbot.math.clamp
@@ -40,6 +42,12 @@ class DebugDraw(
         }
     }
 
+    fun orientedOrigin(center: Vec3, ori: Orientation, size: Float = 125f, forwardColor: Color = Color.RED, rightColor: Color = Color.GREEN, upColor: Color = Color.BLUE) {
+        line(center, center + ori.forward * size, forwardColor)
+        line(center, center + ori.right * size, rightColor)
+        line(center, center + ori.up * size, upColor)
+    }
+
     fun circle(center: Vec3, normal: Vec3, radius: Float, color: Color = this.color) {
 
         var arm = (normal cross center).dir() * radius
@@ -71,22 +79,50 @@ class DebugDraw(
     }
 
     fun cube(center: Vec3, size: Float, color: Color = this.color) {
-        val r = size / 2f
+        cube(center, Vec3(size, size, size), color)
+    }
 
-        line(center + Vec3(-r, -r, -r), center + Vec3(-r, -r, r), color)
-        line(center + Vec3(r, -r, -r), center + Vec3(r, -r, r), color)
-        line(center + Vec3(-r, r, -r), center + Vec3(-r, r, r), color)
-        line(center + Vec3(r, r, -r), center + Vec3(r, r, r), color)
+    fun cube(center: Vec3, size: Vec3, color: Color = this.color) {
+        val xr = size.x / 2f
+        val yr = size.y / 2f
+        val zr = size.z / 2f
 
-        line(center + Vec3(-r, -r, -r), center + Vec3(-r, r, -r), color)
-        line(center + Vec3(r, -r, -r), center + Vec3(r, r, -r), color)
-        line(center + Vec3(-r, -r, r), center + Vec3(-r, r, r), color)
-        line(center + Vec3(r, -r, r), center + Vec3(r, r, r), color)
+        line(center + Vec3(-xr, -yr, -zr), center + Vec3(-xr, -yr, zr), color)
+        line(center + Vec3(xr, -yr, -zr), center + Vec3(xr, -yr, zr), color)
+        line(center + Vec3(-xr, yr, -zr), center + Vec3(-xr, yr, zr), color)
+        line(center + Vec3(xr, yr, -zr), center + Vec3(xr, yr, zr), color)
 
-        line(center + Vec3(-r, -r, -r), center + Vec3(r, -r, -r), color)
-        line(center + Vec3(-r, -r, r), center + Vec3(r, -r, r), color)
-        line(center + Vec3(-r, r, -r), center + Vec3(r, r, -r), color)
-        line(center + Vec3(-r, r, r), center + Vec3(r, r, r), color)
+        line(center + Vec3(-xr, -yr, -zr), center + Vec3(-xr, yr, -zr), color)
+        line(center + Vec3(xr, -yr, -zr), center + Vec3(xr, yr, -zr), color)
+        line(center + Vec3(-xr, -yr, zr), center + Vec3(-xr, yr, zr), color)
+        line(center + Vec3(xr, -yr, zr), center + Vec3(xr, yr, zr), color)
+
+        line(center + Vec3(-xr, -yr, -zr), center + Vec3(xr, -yr, -zr), color)
+        line(center + Vec3(-xr, -yr, zr), center + Vec3(xr, -yr, zr), color)
+        line(center + Vec3(-xr, yr, -zr), center + Vec3(xr, yr, -zr), color)
+        line(center + Vec3(-xr, yr, zr), center + Vec3(xr, yr, zr), color)
+    }
+
+    fun orientedCube(center: Vec3, oriCube: OrientedCube, color: Color = this.color) {
+        val ori = oriCube.ori
+        val xr = oriCube.size.x / 2f
+        val yr = oriCube.size.y / 2f
+        val zr = oriCube.size.z / 2f
+
+        line(center + ori.toGlobal(Vec3(-xr, -yr, -zr)), center + ori.toGlobal(Vec3(-xr, -yr, zr)), color)
+        line(center + ori.toGlobal(Vec3(xr, -yr, -zr)), center + ori.toGlobal(Vec3(xr, -yr, zr)), color)
+        line(center + ori.toGlobal(Vec3(-xr, yr, -zr)), center + ori.toGlobal(Vec3(-xr, yr, zr)), color)
+        line(center + ori.toGlobal(Vec3(xr, yr, -zr)), center + ori.toGlobal(Vec3(xr, yr, zr)), color)
+
+        line(center + ori.toGlobal(Vec3(-xr, -yr, -zr)), center + ori.toGlobal(Vec3(-xr, yr, -zr)), color)
+        line(center + ori.toGlobal(Vec3(xr, -yr, -zr)), center + ori.toGlobal(Vec3(xr, yr, -zr)), color)
+        line(center + ori.toGlobal(Vec3(-xr, -yr, zr)), center + ori.toGlobal(Vec3(-xr, yr, zr)), color)
+        line(center + ori.toGlobal(Vec3(xr, -yr, zr)), center + ori.toGlobal(Vec3(xr, yr, zr)), color)
+
+        line(center + ori.toGlobal(Vec3(-xr, -yr, -zr)), center + ori.toGlobal(Vec3(xr, -yr, -zr)), color)
+        line(center + ori.toGlobal(Vec3(-xr, -yr, zr)), center + ori.toGlobal(Vec3(xr, -yr, zr)), color)
+        line(center + ori.toGlobal(Vec3(-xr, yr, -zr)), center + ori.toGlobal(Vec3(xr, yr, -zr)), color)
+        line(center + ori.toGlobal(Vec3(-xr, yr, zr)), center + ori.toGlobal(Vec3(xr, yr, zr)), color)
     }
 
     fun octahedron(center: Vec3, size: Float, color: Color = this.color) {
