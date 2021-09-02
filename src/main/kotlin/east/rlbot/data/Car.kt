@@ -61,6 +61,7 @@ class Car(
         const val COAST_ACC = 525f
         const val BRAKE_ACC = 3500f
         const val BOOST_BONUS_ACC = 991.66f
+        const val THROTTLE_AIR_ACC = 66.66f
 
         const val BOOST_USAGE_RATE = 33.3f
 

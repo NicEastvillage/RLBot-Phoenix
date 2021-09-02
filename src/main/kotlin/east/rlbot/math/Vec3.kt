@@ -162,6 +162,8 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return projectToPlane(closest)
     }
 
+    fun lerp(other: Vec3, t: Float) = (1f - t) * this + t * other
+
     fun abs(): Vec3 {
         return Vec3(abs(x), abs(y), abs(z))
     }
