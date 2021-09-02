@@ -11,7 +11,7 @@ import kotlin.math.sin
 class Mat3(internal val internalMat: FMatrixRMaj) {
 
     constructor(values: Array<FloatArray>): this(FMatrixRMaj(values))
-    constructor(values: FloatArray): this(FMatrixRMaj(values))
+    //constructor(values: FloatArray): this(FMatrixRMaj(values))
 
     fun transpose(): Mat3 {
         val ret = emptyMatrix()

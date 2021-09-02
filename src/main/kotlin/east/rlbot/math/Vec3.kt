@@ -2,9 +2,8 @@ package east.rlbot.math
 
 import org.ejml.dense.row.CommonOps_FDRM
 import rlbot.gamestate.DesiredVector3
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.sqrt
+import kotlin.math.*
+import kotlin.random.Random
 
 class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.toFloat(), y.toFloat(), z.toFloat()) {
 
@@ -168,6 +167,27 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return Vec3(abs(x), abs(y), abs(z))
     }
 
+    fun maxComponent(): Float = max(max(x, y), z)
+    fun minComponent(): Float = min(min(x, y), z)
+
+    fun coerceAtLeast(minValues: Vec3) = Vec3(
+        max(x, minValues.x),
+        max(y, minValues.y),
+        max(z, minValues.z),
+    )
+
+    fun coerceAtMost(maxValues: Vec3) = Vec3(
+        min(x, maxValues.x),
+        min(y, maxValues.y),
+        min(z, maxValues.z),
+    )
+
+    fun coerceIn(minValues: Vec3, maxValues: Vec3) = Vec3(
+        x.coerceIn(minValues.x, maxValues.x),
+        y.coerceIn(minValues.y, maxValues.y),
+        z.coerceIn(minValues.z, maxValues.z),
+    )
+
     fun toDesired(): DesiredVector3 = DesiredVector3(x, y, z)
 
     override fun toString(): String {
@@ -183,5 +203,8 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         val UP = Vec3(0.0, 0.0, 1.0)
         val DOWN = Vec3(0.0, 0.0, -1.0)
         val ZERO = Vec3()
+        val ONES = Vec3(1f, 1f ,1f)
+
+        fun random(): Vec3 = Vec3(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
     }
 }

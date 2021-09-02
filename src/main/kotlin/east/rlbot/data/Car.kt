@@ -23,6 +23,7 @@ class Car(
     var isFirstFrameOfBeingDemolished = false
 
     var isUpright = true
+    var isHuman = false
 
     /**
      * Returns target as seen from this players perspective.
@@ -52,6 +53,8 @@ class Car(
         isFirstFrameOfBeingDemolished = !wasDemolished && demolished
 
         isUpright = ori.up dot Vec3.UP > 0.55
+
+        isHuman = !player.isBot
     }
 
     companion object {

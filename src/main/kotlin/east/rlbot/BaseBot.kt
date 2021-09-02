@@ -1,5 +1,6 @@
 package east.rlbot
 
+import east.rlbot.data.Arena
 import east.rlbot.data.DataPack
 import east.rlbot.data.Team
 import east.rlbot.maneuver.Maneuver
@@ -13,6 +14,9 @@ import rlbot.Bot
 import rlbot.ControllerState
 import rlbot.flat.GameTickPacket
 import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.random.Random
 
 abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String) : Bot {
 
@@ -34,13 +38,6 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
         data.update(request)
         if (data.me.isFirstFrameOfBeingDemolished) onDemolished()
         if (data.match.isFirstFrameOfKickOff) onKickoffBegin()
-
-        if (index == 0) {
-            for (car in data.allCars) {
-                draw.orientedCube(car.hitboxCenter, car.hitbox, Color.WHITE)
-                draw.orientedOrigin(car.pos, car.ori)
-            }
-        }
 
         // Get output
         training?.exec(this)

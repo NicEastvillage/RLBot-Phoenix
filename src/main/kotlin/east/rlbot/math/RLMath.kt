@@ -39,10 +39,10 @@ fun axisToRotation(axis: Vec3): Mat3 {
         Mat3.IDENTITY
     else {
         val axisU = axis.dir()
-        val K = Mat3(floatArrayOf(
-            0f, -axisU.z, axis.y,
-            axis.z, 0f, -axisU.x,
-            -axisU.y, axis.x, 0f,
+        val K = Mat3(arrayOf(
+            floatArrayOf(0f, -axisU.z, axis.y),
+            floatArrayOf(axis.z, 0f, -axisU.x),
+            floatArrayOf(-axisU.y, axis.x, 0f),
         ))
         Mat3.IDENTITY + sin(radians) * K + (1f - cos(radians)) * (K dot K)
     }
