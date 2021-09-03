@@ -66,6 +66,10 @@ object Arena {
         ORANGE_LEFT_CORNER_WALL
     )
 
+    /**
+     * An approximation of the arena geometry using signed distance fields. The approximation includes the base cube,
+     * the subtracted corners, roundness, and the goals (without roundness).
+     */
     object SDF {
 
         private const val ROUNDNESS = 300f
@@ -76,35 +80,42 @@ object Arena {
 
         private val GOALS_SEMI_SIZE = Vec3(Goal.WIDTH2, LENGTH2 + Goal.DEPTH, Goal.HEIGHT / 2f)
 
+        /**
+         * Returns the distance to the nearest wall of the SDF approximation. The result is negative if the point
+         * is outside the arena.
+         */
         fun wallDistance(point: Vec3): Float {
             // SDF box https://www.youtube.com/watch?v=62-pRVZuS5c
             // SDF rounded corners https://www.youtube.com/watch?v=s5NGeUV2EyU
 
-            // Base square
+            // Base cube
             val baseQ = (point - Vec3(z = HEIGHT2)).abs() - SEMI_SIZE + Vec3.ONES * ROUNDNESS
             val baseDistOutside = baseQ.coerceAtLeast(Vec3.ZERO).mag()
             val baseDistInside = min(baseQ.maxComponent(), 0f) // negative if point is inside
             val baseDist = baseDistOutside + baseDistInside
 
-            // Corners square
+            // Corners cube
             val cornerQ = ((ROT_45_MAT dot point) - Vec3(z = HEIGHT2)).abs() - CORNER_SEMI_SIZE + Vec3.ONES * ROUNDNESS
             val cornerDistOutside = cornerQ.coerceAtLeast(Vec3.ZERO).mag()
             val cornerDistInside = min(cornerQ.maxComponent(), 0f) // negative if point is inside
             val cornerDist = cornerDistOutside + cornerDistInside
 
-            // Goals square
+            // Intersection of base and corners
+            val baseCornerDist = max(baseDist, cornerDist) - ROUNDNESS
+
+            // Goals cube
             val goalsQ = (point - Vec3(z = Goal.HEIGHT / 2f)).abs() - GOALS_SEMI_SIZE
             val goalsDistOutside = goalsQ.coerceAtLeast(Vec3.ZERO).mag()
             val goalsDistInside = min(goalsQ.maxComponent(), 0f) // negative if point is inside
             val goalsDist = goalsDistOutside + goalsDistInside
 
-            // Intersection of base and corners
-            val baseCornerDist = max(baseDist, cornerDist) - ROUNDNESS
-
             // Union with goals and invert result
             return -min(baseCornerDist, goalsDist)
         }
 
+        /**
+         * Returns the normalized gradient at the given point. At wall distance 0 this is the arena's surface normal.
+         */
         fun normal(point: Vec3): Vec3 {
             // SDF normals https://www.iquilezles.org/www/articles/normalsSDF/normalsSDF.htm
             val h = 0.0004f
@@ -113,6 +124,13 @@ object Arena {
                 wallDistance(point + Vec3(0f, h, 0f)) - wallDistance(point - Vec3(0f, h, 0f)),
                 wallDistance(point + Vec3(0f, 0f, h)) - wallDistance(point - Vec3(0f, 0f, h)),
             ).dir()
+        }
+
+        /**
+         * Returns true if the given point is inside the SDF arena approximation
+         */
+        fun contains(point: Vec3): Boolean {
+            return wallDistance(point) > 0f
         }
     }
 }
