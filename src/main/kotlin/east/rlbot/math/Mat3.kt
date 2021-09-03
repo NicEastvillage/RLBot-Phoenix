@@ -12,6 +12,12 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
 
     constructor(values: Array<FloatArray>): this(FMatrixRMaj(values))
     //constructor(values: FloatArray): this(FMatrixRMaj(values))
+    constructor(forward: Vec3, right: Vec3, up: Vec3) : this(arrayOf(
+        floatArrayOf(forward.x, right.x, up.x),
+        floatArrayOf(forward.y, right.y, up.y),
+        floatArrayOf(forward.z, right.z, up.z),
+    ))
+
 
     fun transpose(): Mat3 {
         val ret = emptyMatrix()
@@ -113,13 +119,10 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
         fun lookingInDir(direction: Vec3, up: Vec3 = Vec3.UP): Mat3 {
             val forward = direction.dir()
             val safeUp = if (abs(forward.z) == 1F && abs(up.z) == 1F) Vec3(x = 1.0) else up
-            val leftward = (safeUp cross forward).dir()
-            val upward = (forward cross leftward).dir()
+            val right = (safeUp cross forward).dir()
+            val upward = (forward cross right).dir()
 
-            return Mat3(arrayOf(
-                    floatArrayOf(forward.x, leftward.x, upward.x),
-                    floatArrayOf(forward.y, leftward.y, upward.y),
-                    floatArrayOf(forward.z, leftward.z, upward.z)))
+            return Mat3(forward, right, upward)
         }
 
         fun rotationMatrix(unitAxis: Vec3, rad: Double): Mat3 {

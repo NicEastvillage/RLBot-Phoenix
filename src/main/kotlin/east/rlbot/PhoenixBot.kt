@@ -1,5 +1,6 @@
 package east.rlbot
 
+import east.rlbot.maneuver.Recovery
 import east.rlbot.maneuver.decideKickoff
 import east.rlbot.simulation.JumpModel
 import east.rlbot.states.BallChaseState
@@ -18,6 +19,10 @@ class PhoenixBot(index: Int, team: Int, name: String) : BaseBot(index, team, nam
     }
 
     override fun getOutput(): OutputController {
+        if (!data.me.wheelContact) {
+            maneuver = Recovery()
+            return maneuver!!.exec(data)!!
+        }
         val state = utilitySystem.eval(data)
         return state.exec(data)
     }

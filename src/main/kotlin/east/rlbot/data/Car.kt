@@ -2,6 +2,7 @@ package east.rlbot.data
 
 import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
+import east.rlbot.simulation.RigidBody
 import rlbot.flat.PlayerInfo
 
 class Car(
@@ -56,6 +57,8 @@ class Car(
 
         isHuman = !player.isBot
     }
+
+    fun rigidBody() = RigidBody(pos, vel)
 
     companion object {
         const val REST_HEIGHT = 17f
