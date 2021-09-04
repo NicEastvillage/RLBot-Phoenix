@@ -10,21 +10,19 @@ import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
 import java.awt.Color
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sign
+import kotlin.math.*
 
 class DodgeStrikeDodge(
     interceptBall: FutureBall,
 ) : Strike(interceptBall) {
 
-    private val FIRST_JUMP_PAUSE_DURATION = 0.03f
+    private val FIRST_JUMP_PAUSE_DURATION = 0.02f
     private val SECOND_JUMP_DURATION = 0.08f
     private val SECOND_JUMP_PAUSE_DURATION = 0.4f
 
     override var done = false
 
-    private var expectedFirstJumpDuration = 0f
+    private var expectedFirstJumpDuration = JumpModel.single.simUntilLimit(heightLimit = interceptBall.pos.z).time
 
     private var initialized = false
     private var phase = Phase.FIRST_JUMP
@@ -38,9 +36,6 @@ class DodgeStrikeDodge(
             lastPhaseChange = data.match.time
             if (!data.me.wheelContact) {
                 phase = Phase.FIRST_PAUSE
-            } else {
-                val height = interceptBall.pos.z
-                expectedFirstJumpDuration = JumpModel.single.simUntilLimit(heightLimit = height).time
             }
         }
         val car = data.me
@@ -106,11 +101,12 @@ class DodgeStrikeDodge(
         val car = data.me
         val height = interceptBall.pos.z
         val result = JumpModel.single.simUntilLimit(heightLimit = height)
+        val timeLeft = interceptBall.time - data.match.time
         val boostTime = min(car.boost / Car.BOOST_USAGE_RATE, result.time)
-        val xyDisplacementDuringJumpWithoutBoost = car.vel.flat() * (result.time + 0.03f)
+        val xyDisplacementDuringJumpWithoutBoost = car.vel.flat() * (result.time + 0.02f)
         val xyDisplacementDuringJumpWithBoost = car.ori.forward.flat() * Car.BOOST_BONUS_ACC * boostTime.pow(2) / 2 + xyDisplacementDuringJumpWithoutBoost
         val expectedDodgePos = car.pos + Vec3(z=height) + xyDisplacementDuringJumpWithBoost
-        return expectedDodgePos.dist(interceptBall.pos) < Ball.RADIUS + car.hitbox.size.x / 2f
+        return expectedDodgePos.dist(interceptBall.pos) < Ball.RADIUS + car.hitbox.size.x / 2f + 5f && abs(timeLeft - result.time) < 0.15f
     }
 
     enum class Phase {

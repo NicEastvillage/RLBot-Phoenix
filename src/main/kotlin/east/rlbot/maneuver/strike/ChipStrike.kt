@@ -18,6 +18,11 @@ class ChipStrike(
 
     override fun exec(data: DataPack): OutputController {
 
+        val betterStrike = data.bot.shotFinder.findSoonestStrike(interceptBall.time - data.match.time)
+        if (betterStrike != null) {
+            data.bot.maneuver = betterStrike
+        }
+
         if (!data.me.wheelContact)
             data.bot.maneuver = Recovery()
 

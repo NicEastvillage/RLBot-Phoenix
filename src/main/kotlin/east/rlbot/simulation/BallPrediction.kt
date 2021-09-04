@@ -30,6 +30,6 @@ object BallPredictionManager {
     fun getAtTime(time: Float): FutureBall? {
         val lt = latestTime ?: return null
         val i = ((time - lt) * SLICES_PR_SEC).toInt()
-        return if (i in 0..NR_OF_SLICES) latest?.get(i) else null
+        return if (i in 0 until NR_OF_SLICES) latest?.get(i) else null
     }
 }

@@ -99,7 +99,7 @@ class AerialStrike(
 
         val shootDirection = car.pos.dirTo(interceptBall.pos).flat()
         // TODO Consider ball velocity in offset
-        val desiredPos = interceptBall.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x)
+        val desiredPos = interceptBall.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
         val desiredOri = Mat3.lookingAt(desiredPos, interceptBall.pos, up)
 
         val expectedDelta = desiredPos - expectedPos

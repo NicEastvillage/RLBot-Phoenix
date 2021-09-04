@@ -21,12 +21,17 @@ class DodgeStrike(
     override fun exec(data: DataPack): OutputController {
         val car = data.me
 
+        val betterStrike = data.bot.shotFinder.findSoonestStrike(interceptBall.time - data.match.time)
+        if (betterStrike != null) {
+            data.bot.maneuver = betterStrike
+        }
+
         if (!car.wheelContact)
             data.bot.maneuver = Recovery()
 
         // Find speed
         val carToBallDir = (interceptBall.pos - car.pos).flat().dir()
-        val arrivePos = (interceptBall.pos - carToBallDir * 100).withZ(Car.REST_HEIGHT)
+        val arrivePos = (interceptBall.pos - carToBallDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
         val speed = car.pos.dist(arrivePos) / timeLeft
 
@@ -45,7 +50,7 @@ class DodgeStrike(
     companion object Factory : StrikeFactory {
         override fun tryCreate(bot: BaseBot, ball: FutureBall): DodgeStrike? {
             if (Ball.RADIUS * 1.25f > ball.pos.z && ball.pos.y * bot.team.ysign > 0f) return null // If rolling, then only on opponent half
-            if (JumpModel.single.maxHeight() + Ball.RADIUS / 3f < ball.pos.z) return null
+            if (JumpModel.single.maxHeight() + Ball.RADIUS / 5f < ball.pos.z) return null
             if (ball.vel.flat().mag() > 500f && ball.vel.angle2D(bot.data.me.vel) < 1f) return null
             if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) return null
             return DodgeStrike(ball)
