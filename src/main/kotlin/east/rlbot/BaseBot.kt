@@ -8,6 +8,7 @@ import east.rlbot.math.Vec3
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
+import east.rlbot.training.AerialOrientateTraining
 import east.rlbot.training.Training
 import east.rlbot.util.DebugDraw
 import rlbot.Bot
@@ -40,7 +41,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
         if (data.match.isFirstFrameOfKickOff) onKickoffBegin()
 
         // Get output
-        training?.exec(this)
+        training?.exec(this)?.let { return it }
         val output = maneuver?.exec(data) ?: getOutput()
         draw.string2D(10, 10 + 20 * index, "$name: ${maneuver?.javaClass?.simpleName}")
         draw.send()

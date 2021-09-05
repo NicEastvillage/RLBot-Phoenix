@@ -1,6 +1,7 @@
 package east.rlbot.training
 
 import east.rlbot.BaseBot
+import east.rlbot.OutputController
 import east.rlbot.data.Arena
 import east.rlbot.math.Vec3
 import east.rlbot.util.DebugDraw
@@ -16,8 +17,8 @@ class PlaneTest : Training {
     var points = listOf<Vec3>()
     var projections = listOf<Vec3>()
 
-    override fun exec(bot: BaseBot) {
-        if (bot.index != 0) return
+    override fun exec(bot: BaseBot): OutputController? {
+        if (bot.index != 0) return null
         if (bot.data.match.time >= nextTest) {
             points = List(80) {
                 Vec3(
@@ -51,5 +52,7 @@ class PlaneTest : Training {
             bot.draw.cross(n, 50f, Color.MAGENTA)
             bot.draw.line(wall.offset, n, Color.YELLOW)
         }
+
+        return null
     }
 }

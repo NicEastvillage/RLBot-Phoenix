@@ -1,6 +1,8 @@
 package east.rlbot.training
 
 import east.rlbot.BaseBot
+import east.rlbot.OutputController
+import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 import rlbot.cppinterop.RLBotDll
 import rlbot.gamestate.BallState
@@ -20,7 +22,7 @@ class AerialOrientateTraining : Training {
 
     var ballPos = Vec3(0, 0, 100f)
 
-    override fun exec(bot: BaseBot) {
+    override fun exec(bot: BaseBot): OutputController {
         if (bot.data.match.time >= nextTest) {
             ballPos = CAR_POS + Vec3(
                     Random.nextFloat() * 2 - 1,
@@ -50,5 +52,7 @@ class AerialOrientateTraining : Training {
                 )
 
         RLBotDll.setGameState(gameState.buildPacket())
+
+        return bot.fly.align(Mat3.lookingAt(CAR_POS, ballPos))
     }
 }

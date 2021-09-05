@@ -1,6 +1,7 @@
 package east.rlbot.training
 
 import east.rlbot.BaseBot
+import east.rlbot.OutputController
 import east.rlbot.data.Arena
 import east.rlbot.data.Goal
 import east.rlbot.data.Team
@@ -19,8 +20,8 @@ class KickOffTraining : Training {
     var kickOffEndTime: Float? = null
     var stateManipulated = false
 
-    override fun exec(bot: BaseBot) {
-        if (bot.index != 0) return
+    override fun exec(bot: BaseBot): OutputController? {
+        if (bot.index != 0) return null
 
         if (bot.data.match.isKickOff) {
             stateManipulated = false
@@ -45,5 +46,7 @@ class KickOffTraining : Training {
                 RLBotDll.setGameState(gameState.buildPacket())
             }
         }
+
+        return null
     }
 }
