@@ -9,6 +9,7 @@ import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.Recovery
 import east.rlbot.simulation.JumpModel
 import java.awt.Color
+import kotlin.math.min
 
 class DodgeStrike(
     interceptBall: FutureBall,
@@ -29,9 +30,14 @@ class DodgeStrike(
         if (!car.wheelContact)
             data.bot.maneuver = Recovery()
 
+        // Find positions and directions
+        val target = data.enemyGoal.middle
+        val ballToTargetDir = interceptBall.pos.dirTo(target)
+        val desiredBallVel = ballToTargetDir * min(interceptBall.vel.mag(), 750f)
+        val arriveDir = (desiredBallVel - interceptBall.vel).dir()
+        val arrivePos = (interceptBall.pos - arriveDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
+
         // Find speed
-        val carToBallDir = (interceptBall.pos - car.pos).flat().dir()
-        val arrivePos = (interceptBall.pos - carToBallDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
         val speed = car.pos.dist(arrivePos) / timeLeft
 
@@ -52,7 +58,14 @@ class DodgeStrike(
             if (Ball.RADIUS * 1.25f > ball.pos.z && ball.pos.y * bot.team.ysign > 0f) return null // If rolling, then only on opponent half
             if (JumpModel.single.maxHeight() + Ball.RADIUS / 5f < ball.pos.z) return null
             if (ball.vel.flat().mag() > 500f && ball.vel.angle2D(bot.data.me.vel) < 1f) return null
-            if (bot.drive.estimateTime2D(ball.pos) > ball.time - bot.data.match.time) return null
+
+            val target = bot.data.enemyGoal.middle
+            val ballToTargetDir = ball.pos.dirTo(target)
+            val desiredBallVel = ballToTargetDir * min(ball.vel.mag(), 750f)
+            val arriveDir = (desiredBallVel - ball.vel).dir()
+            val arrivePos = (ball.pos - arriveDir * (Ball.RADIUS + bot.data.me.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
+
+            if (bot.drive.estimateTime2D(arrivePos) > ball.time - bot.data.match.time) return null
             return DodgeStrike(ball)
         }
     }

@@ -5,6 +5,7 @@ import east.rlbot.math.Vec3
 class Goal private constructor(val team: Team) {
 
     val pos = Vec3(y=team.ysign * Arena.LENGTH2)
+    val middle = pos.withZ(HEIGHT / 2f)
     val left = pos.withX(team.ysign * WIDTH2)
     val right = pos.withX(-team.ysign * WIDTH2)
 

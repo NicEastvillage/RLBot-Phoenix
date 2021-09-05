@@ -19,7 +19,7 @@ class ShotFinder(val bot: BaseBot) {
         return null
     }
 
-    fun findSoonestStrike(timeLimit: Float = 6f, strikeFactories: List<StrikeFactory> = listOf(
+    fun findSoonestStrike(timeLimit: Float = 4f, strikeFactories: List<StrikeFactory> = listOf(
         DodgeStrike,
         ChipStrike,
     )): Strike? {

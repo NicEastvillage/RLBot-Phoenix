@@ -17,7 +17,7 @@ fun decideKickoff(bot: BaseBot) {
         bot.print("Going for kick off")
     }
     else {
-        bot.maneuver = TimedOutputManeuver(4f + 1f) { OutputController().withThrottle(0f) }
+        bot.maneuver = TimedOutputManeuver(1f) { OutputController().withThrottle(0f) }
         bot.print("Waiting during kick off")
     }
 }
