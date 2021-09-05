@@ -27,7 +27,7 @@ class AerialMovement(val bot: BaseBot) {
         val rollAng = atan2(-localUp.y, localUp.z)
         val rollAngVel = localAngVel.x
 
-        val Pp = -3.3f
+        val Pp = -3f
         val Dp = 0.8f
 
         val Py = -3.3f
