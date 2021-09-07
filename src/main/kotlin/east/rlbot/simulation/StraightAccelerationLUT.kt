@@ -8,7 +8,7 @@ import kotlin.math.sign
 /**
  * A lookup table with entries describing the relationship between time, distance, and speed during acceleration.
  */
-class AccelerationLUT(file: File) {
+class StraightAccelerationLUT(file: File) {
 
     private val entries: List<Entry> = csvReader().readAllWithHeader(file).map { row ->
         Entry(

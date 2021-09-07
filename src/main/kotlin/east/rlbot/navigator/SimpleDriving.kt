@@ -4,7 +4,7 @@ import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
-import east.rlbot.simulation.AccelerationLUT
+import east.rlbot.simulation.StraightAccelerationLUT
 import east.rlbot.simulation.AccelerationModel
 import east.rlbot.simulation.timeSpentTurning
 
@@ -68,7 +68,7 @@ class SimpleDriving(val bot: BaseBot) {
         var distLeft = car.pos.dist2D(pos)
         var timeSpent = turnTime
 
-        var accelerationResult: AccelerationLUT.LookupResult? = null
+        var accelerationResult: StraightAccelerationLUT.LookupResult? = null
 
         // Accelerate with boost
         if (boostAvailable > 0) {

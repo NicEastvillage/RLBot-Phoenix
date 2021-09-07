@@ -76,5 +76,8 @@ class Car(
         const val JUMP_IMPULSE = 292f
         const val JUMP_HOLD_FORCE = 292f * 5
         const val MAX_JUMP_HOLD_TIME = 0.2f
+
+        const val MAX_THROTTLE_TURN_SPEED = 1225 // Not actually max, but higher speeds take very long to achieve
+        const val MAX_BOOST_TURN_SPEED = 2295
     }
 }
