@@ -65,7 +65,7 @@ class DodgeStrike(
             val arriveDir = (desiredBallVel - ball.vel).dir()
             val arrivePos = (ball.pos - arriveDir * (Ball.RADIUS + bot.data.me.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 
-            if (bot.drive.estimateTime2D(arrivePos) > ball.time - bot.data.match.time) return null
+            if (bot.drive.estimateTime2D(arrivePos) ?: 0f > ball.time - bot.data.match.time) return null
             return DodgeStrike(ball)
         }
     }

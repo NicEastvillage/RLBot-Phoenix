@@ -27,12 +27,17 @@ class Car(
     var isHuman = false
 
     /**
-     * Returns target as seen from this players perspective.
+     * Returns position as seen from this players perspective.
      * x is distance forward of the car,
      * y is distance right of the car,
      * z is distance above the car.
      */
-    fun toLocal(target: Vec3): Vec3 = ori.toLocal(target - pos)
+    fun toLocal(pos: Vec3): Vec3 = ori.toLocal(pos - this.pos)
+
+    /**
+     * Returns local position in global coordinates
+     */
+    fun toGlobal(localPos: Vec3): Vec3 = ori.toGlobal(localPos) + pos
 
     fun forwardSpeed(): Float = vel dot ori.forward
 

@@ -54,7 +54,7 @@ class ChipStrike(
             val arriveDir = (desiredBallVel - ball.vel).dir()
             val arrivePos = (ball.pos - arriveDir * 100).withZ(Car.REST_HEIGHT)
 
-            if (bot.drive.estimateTime2D(arrivePos) > ball.time - bot.data.match.time) return null
+            if (bot.drive.estimateTime2D(arrivePos) ?: 0f > ball.time - bot.data.match.time) return null
 
             return ChipStrike(ball)
         }

@@ -199,6 +199,11 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return o.x == x && o.y == y && o.z == z
     }
 
+    /**
+     * Returns angle between this and Vec(1, 0, 0)
+     */
+    fun atan2(): Float = Math.atan2(y.toDouble(), x.toDouble()).toFloat()
+
     companion object {
         val UP = Vec3(0.0, 0.0, 1.0)
         val DOWN = Vec3(0.0, 0.0, -1.0)

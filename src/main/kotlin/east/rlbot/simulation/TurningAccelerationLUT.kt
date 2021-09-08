@@ -52,6 +52,7 @@ class TurningAccelerationLUT(file: File) {
         val resultIndex = listOf(timeLimitIndex, angleLimitIndex, speedLimitIndex).minOrNull()!!.coerceAtLeast(startIndex)
         val resultEntry = entries[resultIndex]
 
+        // Find displacement relative to start position and angle
         val displacement = startEntry.localDisplacement - resultEntry.localDisplacement
         val startOri = Orientation(Mat3.eulerToRotation(0f, startEntry.angle, 0f))
         val localDisplacement = startOri.toLocal(displacement)

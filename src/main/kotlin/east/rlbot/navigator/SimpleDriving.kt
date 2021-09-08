@@ -4,9 +4,11 @@ import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
-import east.rlbot.simulation.StraightAccelerationLUT
-import east.rlbot.simulation.AccelerationModel
-import east.rlbot.simulation.timeSpentTurning
+import east.rlbot.simulation.*
+import java.awt.Color
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+import kotlin.math.sqrt
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -52,21 +54,48 @@ class SimpleDriving(val bot: BaseBot) {
     }
 
     /**
-     * Estimate the minimum time needed to reach the given position from the current position
+     * Estimate the minimum time needed to reach the given position from the current position.
+     * Returns null if the target position is withing turn radius.
      */
-    fun estimateTime2D(pos: Vec3, boostAvailable: Int = bot.data.me.boost): Float {
+    fun estimateTime2D(pos: Vec3, boostAvailable: Int = bot.data.me.boost, draw: Boolean = false): Float? {
         // TODO Consider turning
 
         val car = bot.data.me
         var currentSpeed = car.forwardSpeed()
 
-        // Turning, assuming constant speed TODO Find distance left after turning
+        // Turning, assuming constant speed
         val dir = car.pos.dirTo(pos)
-        val angle = car.ori.forward.angle2D(dir)
-        val turnTime = timeSpentTurning(currentSpeed, angle)
+        val turnSign = car.ori.toLocal(dir).y.sign
+        val radius = turnRadius(currentSpeed)
 
-        var distLeft = car.pos.dist2D(pos)
-        var timeSpent = turnTime
+        // Tangent points https://en.wikipedia.org/wiki/Tangent_lines_to_circles
+        val localPos = car.toLocal(pos.flat()) - Vec3(y=turnSign * radius)
+        val distSqr = localPos.magSqr()
+        if (distSqr < radius * radius) return null // Target pos is inside turn radius
+        val offsetTowardsPos = localPos * radius * radius / distSqr
+        val localTangentPoint = offsetTowardsPos - Vec3(-localPos.y, localPos.x) * turnSign * radius * sqrt(distSqr - radius * radius) / distSqr + Vec3(y=turnSign * radius)
+        // Where we end up after turning
+        val tangentPoint = car.toGlobal(localTangentPoint)
+        val angle = ((localTangentPoint - Vec3(y=turnSign * radius)).atan2() + turnSign * Math.PI.toFloat() / 2f).absoluteValue
+
+        if (draw) {
+            val mid = car.pos + car.ori.right * turnSign * radius
+
+            bot.draw.color = Color.WHITE
+            bot.draw.line(tangentPoint, pos.withZ(Car.REST_HEIGHT))
+            if (angle > 0.08) {
+                bot.draw.rect3D(tangentPoint, 12, 12)
+                bot.draw.string3D(mid.withZ(50), "$angle")
+                bot.draw.circle(mid, car.ori.up, radius)
+
+                bot.draw.color = Color.GRAY
+                bot.draw.line(car.pos, mid)
+                bot.draw.line(mid, tangentPoint)
+            }
+        }
+
+        var distLeft = tangentPoint.dist2D(pos)
+        var timeSpent = timeSpentTurning(currentSpeed, angle)
 
         var accelerationResult: StraightAccelerationLUT.LookupResult? = null
 

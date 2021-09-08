@@ -8,6 +8,7 @@ import east.rlbot.math.Vec3
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
+import east.rlbot.simulation.turnRadius
 import east.rlbot.training.AerialOrientateTraining
 import east.rlbot.training.Training
 import east.rlbot.util.DebugDraw
@@ -17,6 +18,8 @@ import rlbot.flat.GameTickPacket
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sign
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String) : Bot {

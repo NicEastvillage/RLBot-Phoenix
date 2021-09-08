@@ -1,10 +1,7 @@
 package east.rlbot.util
 
 import east.rlbot.data.Orientation
-import east.rlbot.math.OrientedCube
-import east.rlbot.math.Vec3
-import east.rlbot.math.axisToRotation
-import east.rlbot.math.clamp
+import east.rlbot.math.*
 import rlbot.cppinterop.RLBotDll
 import rlbot.cppinterop.RLBotInterfaceException
 import java.awt.Color
@@ -25,6 +22,10 @@ class DebugDraw(
 
     fun string2D(x: Int, y: Int, text: String, scale: Int = 1, color: Color = this.color) {
         renderer.drawString2d(text, color, Point(x, y), scale, scale)
+    }
+
+    fun string3D(pos: Vec3, text: String, scale: Int = 1, color: Color = this.color) {
+        renderer.drawString3d(text, color, pos, scale, scale)
     }
 
     fun rect3D(pos: Vec3, width: Int, height: Int, fill: Boolean = true, centered: Boolean = true, color: Color = this.color) {
@@ -53,7 +54,7 @@ class DebugDraw(
         var arm = (normal cross center).dir() * radius
         val pieces = radius.pow(0.7f).toInt() + 5
         val angle = 2 * Math.PI / pieces
-        val rotMat = axisToRotation(normal.dir() * angle)
+        val rotMat = Mat3.rotationMatrix(normal.dir(), angle)
 
         val points = mutableListOf(center + arm)
         for (i in 0 until pieces) {
