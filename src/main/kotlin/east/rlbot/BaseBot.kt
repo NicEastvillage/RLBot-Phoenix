@@ -46,7 +46,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
         // Get output
         training?.exec(this)?.let { return it }
         val output = maneuver?.exec(data) ?: getOutput()
-        draw.string2D(10, 10 + 20 * index, "$name: ${maneuver?.javaClass?.simpleName}")
+        draw.string2D(10, 560 + 20 * index, "$name: ${maneuver?.javaClass?.simpleName}", color = Color.WHITE)
         draw.send()
 
         // Check if maneuver is done and can be discarded

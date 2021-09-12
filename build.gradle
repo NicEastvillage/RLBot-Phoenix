@@ -11,6 +11,11 @@ repositories {
 
 def dllDirectory = 'build/dll'
 
+applicationDefaultJvmArgs = [
+        "-Djna.library.path=" + dllDirectory,
+        "-Djava.library.path=" + dllDirectory
+]
+
 dependencies {
     // Align versions of all Kotlin components
     compile platform('org.jetbrains.kotlin:kotlin-bom')

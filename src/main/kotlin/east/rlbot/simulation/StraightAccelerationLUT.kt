@@ -2,15 +2,16 @@ package east.rlbot.simulation
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import java.io.File
+import java.io.InputStream
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 /**
  * A lookup table with entries describing the relationship between time, distance, and speed during acceleration.
  */
-class StraightAccelerationLUT(file: File) {
+class StraightAccelerationLUT(inputStream: InputStream) {
 
-    private val entries: List<Entry> = csvReader().readAllWithHeader(file).map { row ->
+    private val entries: List<Entry> = csvReader().readAllWithHeader(inputStream).map { row ->
         Entry(
             row["time"]!!.toFloat(),
             row["distance"]!!.toFloat(),
