@@ -6,6 +6,7 @@ import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.Dodge
+import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
 import east.rlbot.simulation.Physics.GRAVITY
@@ -105,10 +106,11 @@ class AerialStrike(
         val expectedDelta = desiredPos - expectedPos
         val expectedDeltaDir = expectedDelta.dir()
 
-        // Begin dodge TODO
+        // Begin dodge
         if (doDodgeStrike && firstJumpDone) {
             if (expectedDelta.magSqr() < 30*30) {
-                // data.bot.maneuver = TODO
+                data.bot.maneuver = DodgeFinish(interceptBall.pos)
+                return data.bot.maneuver!!.exec(data)!!
             }
         }
 
