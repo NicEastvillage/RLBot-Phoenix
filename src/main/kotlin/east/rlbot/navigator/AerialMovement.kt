@@ -8,8 +8,15 @@ import kotlin.math.pow
 
 class AerialMovement(val bot: BaseBot) {
 
+    /**
+     * Returns the controls in order to align the cars orientation with the given target.
+     * When [upIsImportant] is false, the alignment will prioritise find the forward direction before the up,
+     * other up will be prioritised before forward. In other words, set [upIsImportant] to false during aerials,
+     * and set [upIsImportant] to true when we want to land on our wheels.
+     */
     fun align(
-            targetOri: Mat3
+        targetOri: Mat3,
+        upIsImportant: Boolean = false,
     ): OutputController {
 
         val controls = OutputController()
@@ -27,22 +34,26 @@ class AerialMovement(val bot: BaseBot) {
         val rollAng = atan2(-localUp.y, localUp.z)
         val rollAngVel = localAngVel.x
 
-        val Pp = -3f
+        val Pp = -3.8f
         val Dp = 0.8f
 
-        val Py = -3.3f
+        val yawScale =
+            if (upIsImportant) (targetOri.up() dot bot.data.me.ori.up).let { if (it > 0.5f) it.pow(1.5f) else 0f }
+            else 1f
+        val Py = -3.8f
         val Dy = 0.9f
 
-        //val rollScale = (targetOri.forward() dot bot.data.me.ori.forward).pow(16.0f)
-        val rollScale = (targetOri.forward() dot bot.data.me.ori.forward).let { if (it > 0.85f) it.pow(2f) else 0f }
-        val Pr = -3f
+        val rollScale =
+            if (upIsImportant) 1f
+            else (targetOri.forward() dot bot.data.me.ori.forward).let { if (it > 0.5f) it.pow(1.5f) else 0f }
+        val Pr = -3.3f
         val Dr = 0.5f
 
         controls
-                .withPitch(Pp * pitchAng + Dp * pitchAngVel)
-                .withYaw(Py * yawAng + Dy * yawAngVel)
-                .withRoll((Pr * rollAng + Dr * rollAngVel) * rollScale)
-                .withThrottle(1f)
+            .withPitch(Pp * pitchAng + Dp * pitchAngVel)
+            .withYaw((Py * yawAng + Dy * yawAngVel) * yawScale)
+            .withRoll((Pr * rollAng + Dr * rollAngVel) * rollScale)
+            .withThrottle(1f)
 
         return controls
     }

@@ -13,7 +13,7 @@ class Recovery : Maneuver {
     override fun exec(data: DataPack): OutputController {
         done = data.me.wheelContact
         val landingRotation = findLandingRotation(data)
-        return data.bot.fly.align(landingRotation)
+        return data.bot.fly.align(landingRotation, upIsImportant = true)
     }
 
     fun findLandingRotation(data: DataPack): Mat3 {
