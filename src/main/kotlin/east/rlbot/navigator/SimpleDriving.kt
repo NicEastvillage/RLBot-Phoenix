@@ -58,11 +58,11 @@ class SimpleDriving(val bot: BaseBot) {
      * Returns null if the target position is withing turn radius.
      */
     fun estimateTime2D(pos: Vec3, boostAvailable: Int = bot.data.me.boost, draw: Boolean = false): Float? {
-        // TODO Consider turning
 
         val car = bot.data.me
         var currentSpeed = car.forwardSpeed()
 
+        // TODO Consider acceleration during turning. This probably has to be found iteratively
         // Turning, assuming constant speed
         val dir = car.pos.dirTo(pos)
         val turnSign = car.ori.toLocal(dir).y.sign

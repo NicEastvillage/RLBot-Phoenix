@@ -3,7 +3,6 @@ package east.rlbot.data
 import east.rlbot.math.Mat3
 import east.rlbot.math.Plane
 import east.rlbot.math.Vec3
-import east.rlbot.math.axisToRotation
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
