@@ -4,11 +4,11 @@ import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
+import east.rlbot.math.tangentPoint
 import east.rlbot.simulation.*
 import java.awt.Color
 import kotlin.math.absoluteValue
 import kotlin.math.sign
-import kotlin.math.sqrt
 
 
 class SimpleDriving(val bot: BaseBot) {
@@ -68,12 +68,8 @@ class SimpleDriving(val bot: BaseBot) {
         val turnSign = car.ori.toLocal(dir).y.sign
         val radius = turnRadius(currentSpeed)
 
-        // Tangent points https://en.wikipedia.org/wiki/Tangent_lines_to_circles
-        val localPos = car.toLocal(pos.flat()) - Vec3(y=turnSign * radius)
-        val distSqr = localPos.magSqr()
-        if (distSqr < radius * radius) return null // Target pos is inside turn radius
-        val offsetTowardsPos = localPos * radius * radius / distSqr
-        val localTangentPoint = offsetTowardsPos - Vec3(-localPos.y, localPos.x) * turnSign * radius * sqrt(distSqr - radius * radius) / distSqr + Vec3(y=turnSign * radius)
+        val localPosOffset = car.toLocal(pos.flat()) - Vec3(y=turnSign * radius)
+        val localTangentPoint = (tangentPoint(radius, localPosOffset, turnSign) ?: return null) + Vec3(y=turnSign * radius)
         // Where we end up after turning
         val tangentPoint = car.toGlobal(localTangentPoint)
         val angle = ((localTangentPoint - Vec3(y=turnSign * radius)).atan2() + turnSign * Math.PI.toFloat() / 2f).absoluteValue
