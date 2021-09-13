@@ -56,6 +56,11 @@ class DodgeStrikeDodge(
             data.bot.maneuver = DodgeFinish(interceptBall.pos)
         }
 
+        if (car.wheelContact && data.match.time - startTime > 0.03f) {
+            // Something went wrong. We jumped, but now we have wheel contact
+            done = true
+        }
+
         return controls
     }
 

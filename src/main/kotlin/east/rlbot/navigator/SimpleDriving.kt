@@ -116,6 +116,6 @@ class SimpleDriving(val bot: BaseBot) {
         if (accelerationResult == null || accelerationResult.distanceLimitReached)
             timeSpent += distLeft / currentSpeed
 
-        return timeSpent * 1.02f
+        return timeSpent
     }
 }
