@@ -9,6 +9,16 @@ fun clamp(value: Double, min: Double, max: Double) = value.coerceIn(min, max)
 fun clamp(value: Float, min: Float, max: Float) = value.coerceIn(min, max)
 
 /**
+ * Linear interpolation
+ */
+fun lerp(a: Float, b: Float, t: Float) = (1f - t) * a + t * b
+
+/**
+ * Inverse linear interpolation
+ */
+fun invLerp(a: Float, b: Float, v: Float) = (v - a) / (b - a)
+
+/**
  * Returns the intersection point of a 2D circle located at origin with the given radius and the tangent goes through
  * the given point.
  * When [side] is 1 the right-side tangent is returned, and when [side] is -1 the left-side tangent is returned.

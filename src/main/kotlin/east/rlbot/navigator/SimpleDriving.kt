@@ -5,7 +5,10 @@ import east.rlbot.OutputController
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import east.rlbot.math.tangentPoint
-import east.rlbot.simulation.*
+import east.rlbot.simulation.AccelerationModel
+import east.rlbot.simulation.StraightAccelerationLUT
+import east.rlbot.simulation.timeSpentTurning
+import east.rlbot.simulation.turnRadius
 import java.awt.Color
 import kotlin.math.absoluteValue
 import kotlin.math.sign
