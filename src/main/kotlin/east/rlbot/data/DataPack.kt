@@ -26,6 +26,7 @@ class DataPack(val bot: BaseBot, val index: Int) {
         match.update(packet.gameInfo(), ball)
 
         BallPredictionManager.update(match.time)
+        BoostPadManager.update(packet)
 
         // Update cars
         for (carIndex in 0 until packet.playersLength()) {

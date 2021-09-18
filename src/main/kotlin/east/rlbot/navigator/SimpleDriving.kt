@@ -2,6 +2,7 @@ package east.rlbot.navigator
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.BoostPadManager
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import east.rlbot.math.tangentPoint
@@ -10,7 +11,9 @@ import east.rlbot.simulation.StraightAccelerationLUT
 import east.rlbot.simulation.timeSpentTurning
 import east.rlbot.simulation.turnRadius
 import java.awt.Color
+import kotlin.math.abs
 import kotlin.math.absoluteValue
+import kotlin.math.pow
 import kotlin.math.sign
 
 
@@ -54,6 +57,25 @@ class SimpleDriving(val bot: BaseBot) {
         controls.withSteer(localTarget.dir().y * 5)
 
         return controls
+    }
+
+    fun boostPickupTowards(
+        target: Vec3,
+        targetSpeed: Float,
+        boostPreservation: Int // don't use boost if we are below this amount
+    ): OutputController {
+        val car = bot.data.me
+        val carTargetDist = car.pos.dist(target)
+        val bestPad = BoostPadManager.allPads.filter { pad ->
+            val dist = pad.pos.dist(car.pos)
+            (pad.active || dist / pad.timeTillActive > targetSpeed) && pad.pos.dist(car.pos) + pad.pos.dist(target) < 1.3f * carTargetDist
+        }.minByOrNull { pad ->
+            val score = 1.5f * pad.pos.dist(car.pos) + pad.pos.dist(target) + 0.5f * abs(car.ori.right dot pad.pos)
+            bot.draw.line(pad.pos, pad.pos.withZ(score / 20f), Color.GREEN)
+            score
+        }
+        if (bestPad != null) bot.draw.line(car.pos, bestPad.pos, Color.GREEN)
+        return towards(bestPad?.pos ?: target, targetSpeed, boostPreservation)
     }
 
     /**

@@ -19,7 +19,7 @@ class ShotFinder(val bot: BaseBot) {
     fun findSoonestStrike(timeLimit: Float = 4f, strikeFactories: List<StrikeFactory> = listOf(
         DodgeStrike,
         ChipStrike,
-        CatchIntoDribble,
+        //CatchIntoDribble,
     )): Strike? {
         val slices = (SLICES_PR_SEC * timeLimit).toInt().coerceAtLeast(0)
         return BallPredictionManager.latest?.subList(0, slices)?.mapNotNull { ball ->

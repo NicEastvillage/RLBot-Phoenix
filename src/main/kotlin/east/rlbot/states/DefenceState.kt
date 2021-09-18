@@ -14,10 +14,17 @@ class DefenceState : UtilityState {
     }
 
     override fun exec(data: DataPack): OutputController {
-        return data.bot.drive.towards(
+        return if (data.me.boost < 50)
+            data.bot.drive.boostPickupTowards(
                 data.myGoal.pos,
                 targetSpeed = Car.MAX_SPEED,
-                boostPreservation = 100
-        )
+                boostPreservation = 100,
+            )
+        else
+            data.bot.drive.towards(
+                data.myGoal.pos,
+                targetSpeed = Car.MAX_SPEED,
+                boostPreservation = 100,
+            )
     }
 }
