@@ -1,10 +1,7 @@
 package east.rlbot.maneuver.strike
 
 import east.rlbot.OutputController
-import east.rlbot.data.Ball
-import east.rlbot.data.Car
-import east.rlbot.data.DataPack
-import east.rlbot.data.FutureBall
+import east.rlbot.data.*
 import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.maneuver.Recovery
 import east.rlbot.math.Mat3
@@ -14,7 +11,7 @@ import java.awt.Color
 import kotlin.math.*
 
 class DodgeStrikeDodge(
-    interceptBall: FutureBall,
+    interceptBall: AdjustableFutureBall,
 ) : Strike(interceptBall) {
 
     private val FIRST_JUMP_PAUSE_DURATION = 0.02f
@@ -34,6 +31,7 @@ class DodgeStrikeDodge(
             startTime = data.match.time
         }
         val car = data.me
+        interceptBall.adjust()
         val height = interceptBall.pos.z
 
         val jumpTimeLeft = (startTime + expectedFirstJumpDuration - data.match.time).coerceAtLeast(0f)

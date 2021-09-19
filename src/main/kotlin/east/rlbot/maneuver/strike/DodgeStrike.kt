@@ -2,17 +2,14 @@ package east.rlbot.maneuver.strike
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
-import east.rlbot.data.Ball
-import east.rlbot.data.Car
-import east.rlbot.data.DataPack
-import east.rlbot.data.FutureBall
+import east.rlbot.data.*
 import east.rlbot.maneuver.Recovery
 import east.rlbot.simulation.JumpModel
 import java.awt.Color
 import kotlin.math.min
 
 class DodgeStrike(
-    interceptBall: FutureBall,
+    interceptBall: AdjustableFutureBall,
 ) : Strike(interceptBall) {
 
     override var done: Boolean = false
@@ -30,6 +27,8 @@ class DodgeStrike(
         if (!car.wheelContact)
             data.bot.maneuver = Recovery()
 
+        interceptBall.adjust()
+
         // Find positions and directions
         val target = data.enemyGoal.middle
         val ballToTargetDir = interceptBall.pos.dirTo(target)
@@ -45,7 +44,7 @@ class DodgeStrike(
         if (dodgeStrikeDodge.canBegin(data))
             data.bot.maneuver = dodgeStrikeDodge
 
-        done = timeLeft <= 0 || speed > Car.MAX_SPEED + 10f || (speed > Car.MAX_THROTTLE_SPEED + 10f && car.boost == 0) || !interceptBall.valid()
+        done = timeLeft <= 0 || speed > Car.MAX_SPEED + 10f || (speed > Car.MAX_THROTTLE_SPEED + 10f && car.boost == 0) || !interceptBall.valid
 
         data.bot.draw.crossAngled(interceptBall.pos, 85f, Color.MAGENTA)
         data.bot.draw.line(car.pos, arrivePos, Color.CYAN)
@@ -66,7 +65,7 @@ class DodgeStrike(
             val arrivePos = (ball.pos - arriveDir * (Ball.RADIUS + bot.data.me.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 
             if (bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE > ball.time - bot.data.match.time) return null
-            return DodgeStrike(ball)
+            return DodgeStrike(ball.adjustable())
         }
     }
 }

@@ -2,6 +2,7 @@ package east.rlbot.maneuver.strike
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.AdjustableFutureBall
 import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
@@ -12,7 +13,7 @@ import kotlin.math.abs
 import kotlin.math.min
 
 class ChipStrike(
-    interceptBall: FutureBall,
+    interceptBall: AdjustableFutureBall,
 ) : Strike(interceptBall) {
 
     override var done: Boolean = false
@@ -27,6 +28,8 @@ class ChipStrike(
         if (!data.me.wheelContact)
             data.bot.maneuver = Recovery()
 
+        interceptBall.adjust()
+
         val target = data.enemyGoal.middle
         val ballToTargetDir = interceptBall.pos.dirTo(target)
         val desiredBallVel = ballToTargetDir * min(interceptBall.vel.mag(), 750f)
@@ -35,7 +38,7 @@ class ChipStrike(
         val arrivePos = (interceptBall.pos - arriveDir * 100).withZ(Car.REST_HEIGHT)
         val timeLeft = interceptBall.time - data.match.time
         val speed = data.me.pos.dist(arrivePos) / timeLeft
-        done = timeLeft <= 0 || speed > Car.MAX_SPEED + 10f || (speed > Car.MAX_THROTTLE_SPEED + 10f && data.me.boost == 0) || !interceptBall.valid()
+        done = timeLeft <= 0 || speed > Car.MAX_SPEED + 10f || (speed > Car.MAX_THROTTLE_SPEED + 10f && data.me.boost == 0) || !interceptBall.valid
 
         data.bot.draw.crossAngled(interceptBall.pos, 85f, Color.GREEN)
         data.bot.draw.line(data.me.pos, arrivePos, Color.CYAN)
@@ -56,7 +59,7 @@ class ChipStrike(
 
             if (bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE > ball.time - bot.data.match.time) return null
 
-            return ChipStrike(ball)
+            return ChipStrike(ball.adjustable())
         }
     }
 }

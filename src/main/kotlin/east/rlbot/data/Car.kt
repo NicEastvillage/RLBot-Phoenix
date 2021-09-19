@@ -21,6 +21,7 @@ class Car(
     var boost = 0
     var supersonic = false
     var wheelContact = false
+    var timeWithWheelContact = 0f
     var demolished = false
     var isFirstFrameOfBeingDemolished = false
 
@@ -55,6 +56,7 @@ class Car(
         boost = player.boost()
         supersonic = player.isSupersonic()
         wheelContact = player.hasWheelContact()
+        timeWithWheelContact = if (wheelContact) timeWithWheelContact + DT else -DT
         val wasDemolished = demolished
         demolished = player.isDemolished()
         isFirstFrameOfBeingDemolished = !wasDemolished && demolished

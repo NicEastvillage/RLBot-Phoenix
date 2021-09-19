@@ -25,7 +25,7 @@ class ShotFinder(val bot: BaseBot) {
     )): Strike? {
         val slices = (SLICES_PR_SEC * timeLimit).toInt().coerceAtLeast(0)
         return BallPredictionManager.latest?.subList(0, slices)?.mapNotNull { ball ->
-            if (ball.pos.y > Arena.LENGTH2 + 5f) return null // Goal scored, abandon search
+            if (ball.pos.y > Arena.LENGTH2 + 5f) return@findSoonestStrike null // Goal scored, abandon search
             strikeFactories.mapNotNull { it.tryCreate(bot, ball) }.firstOrNull()
         }?.firstOrNull()
     }
