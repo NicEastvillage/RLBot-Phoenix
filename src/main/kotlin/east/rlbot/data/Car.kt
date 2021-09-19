@@ -3,6 +3,7 @@ package east.rlbot.data
 import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.RigidBody
+import east.rlbot.util.DT
 import rlbot.flat.PlayerInfo
 
 class Car(
@@ -75,9 +76,10 @@ class Car(
         const val THROTTLE_AIR_ACC = 66.66f
 
         const val BOOST_USAGE_RATE = 33.3f
+        const val MIN_BOOST_TIME = 4 * DT // Maybe wrong, at most 0.1f though
 
         const val WALL_STICKY_FORCE = 325f
-        const val WALL_STICKY_TIME = 3/120f
+        const val WALL_STICKY_TIME = 4 * DT
         const val JUMP_IMPULSE = 292f
         const val JUMP_HOLD_FORCE = 292f * 5
         const val MAX_JUMP_HOLD_TIME = 0.2f
