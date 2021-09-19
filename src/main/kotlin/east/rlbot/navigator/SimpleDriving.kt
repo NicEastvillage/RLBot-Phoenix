@@ -71,7 +71,7 @@ class SimpleDriving(val bot: BaseBot) {
             (pad.active || dist / pad.timeTillActive > targetSpeed) && pad.pos.dist(car.pos) + pad.pos.dist(target) < 1.3f * carTargetDist
         }.minByOrNull { pad ->
             val score = 1.5f * pad.pos.dist(car.pos) + pad.pos.dist(target) + 0.5f * abs(car.ori.right dot pad.pos)
-            bot.draw.line(pad.pos, pad.pos.withZ(score / 20f), Color.GREEN)
+            // bot.draw.line(pad.pos, pad.pos.withZ(score / 20f), Color.GREEN)
             score
         }
         if (bestPad != null) bot.draw.line(car.pos, bestPad.pos, Color.GREEN)

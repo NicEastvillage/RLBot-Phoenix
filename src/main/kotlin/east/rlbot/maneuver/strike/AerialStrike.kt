@@ -1,5 +1,6 @@
 package east.rlbot.maneuver.strike
 
+import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
@@ -8,10 +9,13 @@ import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
+import east.rlbot.simulation.JumpModel
 import east.rlbot.simulation.Physics.GRAVITY
 import east.rlbot.util.DT
+import east.rlbot.util.coerceIn01
 import java.awt.Color
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 class AerialStrike(
     interceptBall: FutureBall,
@@ -35,6 +39,7 @@ class AerialStrike(
             initialized = true
             jumping = data.me.wheelContact
             doSecondJump = doSecondJump && data.me.wheelContact
+            println("Aerial! ${data.match.time}")
         }
 
         val now = data.match.time
@@ -142,18 +147,82 @@ class AerialStrike(
             }
         }
 
-        done = interceptBall.valid() || // Ball prediction changed
-                (!jumping && car.wheelContact) // We landed after jumping
+        done = !interceptBall.valid() //|| // Ball prediction changed
+                // (!jumping && car.wheelContact) // We landed after jumping
 
         // Rendering
         val carToHitPosDir = (desiredPos - car.pos).dir()
         val draw = data.bot.draw
-        draw.color = Color.PINK
+        draw.color = Color.MAGENTA
         draw.orientedCube(desiredPos, OrientedCube(desiredOri, car.hitbox.size))
         draw.circle(car.pos.lerp(desiredPos, 0.33f), carToHitPosDir, 40f)
         draw.circle(car.pos.lerp(desiredPos, 0.66f), carToHitPosDir, 40f)
         draw.line(car.pos, desiredPos)
 
         return controls
+    }
+
+    companion object Factory : StrikeFactory {
+        override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
+            val car = bot.data.me
+
+            if (ball.pos.z < JumpModel.single.maxHeight() + 2 * Ball.RADIUS) return null
+
+            val up = car.ori.up
+            val timeLeft = ball.time - bot.data.match.time
+            val dodgePossible = timeLeft < Car.MAX_JUMP_HOLD_TIME + 1.25 && car.wheelContact // TODO Replace wheelcontact with hasDoubleJump
+            val scenarios = if (dodgePossible) listOf(true, false) else listOf(false)
+
+            for (doDodge in scenarios) {
+                var expectedPos = car.pos + car.vel * timeLeft + GRAVITY * timeLeft.pow(2) * 0.5f
+                var expectedVel = car.vel + GRAVITY * timeLeft
+
+                if (car.wheelContact) {
+                    val jumpTime = Car.MAX_JUMP_HOLD_TIME
+
+                    // First jump impulse
+                    expectedPos += up * Car.JUMP_IMPULSE * timeLeft
+                    expectedVel += up * Car.JUMP_IMPULSE
+
+                    // Acceleration from holding jump button
+                    expectedPos += up * Car.JUMP_IMPULSE * jumpTime * (timeLeft - 0.5 * jumpTime)
+                    expectedVel += up * Car.JUMP_IMPULSE * jumpTime
+
+                    if (!doDodge) {
+                        expectedPos += up * Car.JUMP_IMPULSE * (timeLeft - jumpTime)
+                        expectedVel += up * Car.JUMP_IMPULSE
+                    }
+                }
+
+                val shootDirection = car.pos.dirTo(ball.pos).flat()
+                // TODO Consider ball velocity in offset
+                val desiredPos = ball.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
+                val desiredOri = Mat3.lookingAt(desiredPos, ball.pos, up)
+
+                val posDelta = desiredPos - expectedPos
+                val posDeltaDir = posDelta.dir()
+
+                // RLU magic checks
+                val oriAngle = car.ori.mat.angleTo(desiredOri)
+                val turnTime = 0.75f * 2 * sqrt(oriAngle / 9f)
+                val tau1 = turnTime * (1f - 0.3f / oriAngle).coerceIn01()
+
+                val requiredAcc = (2 * posDelta.mag() / (timeLeft - tau1).pow(2))
+                val accRatio = requiredAcc / (Car.BOOST_BONUS_ACC + Car.THROTTLE_AIR_ACC)
+                val enoughTime = accRatio <= 0.9f
+
+                val tau2 = timeLeft - (timeLeft - tau1) * sqrt(1f - accRatio.coerceIn01())
+                val boostEstimate = (tau2 - tau1) * Car.BOOST_USAGE_RATE
+                val enoughBoost = boostEstimate < car.boost
+
+                val velEstimate = expectedVel + posDeltaDir * Car.BOOST_BONUS_ACC * (tau2 - tau1)
+                val realisticSpeed = velEstimate.mag() < Car.MAX_SPEED
+
+                if (enoughTime && enoughBoost && realisticSpeed)
+                    return AerialStrike(ball, !doDodge, doDodge)
+            }
+
+            return null
+        }
     }
 }

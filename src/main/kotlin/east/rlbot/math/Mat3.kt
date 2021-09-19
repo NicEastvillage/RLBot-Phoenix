@@ -91,10 +91,10 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
     /**
      * https://github.com/samuelpmish/RLUtilities/blob/f071b4dec24d3389f21727ca2d95b75980cbb5fb/RLUtilities/cpp/inc/linalg.h#L71-L74
      */
-    fun angleTo(other: Mat3): Double {
+    fun angleTo(other: Mat3): Float {
         val dot = this.dot(other.transpose())
         val trace = dot.trace()
-        return acos(0.5 * (trace - 1))
+        return acos(0.5 * (trace - 1)).toFloat()
     }
 
     fun tr(): Float = internalMat[0, 0] + internalMat[1, 1] + internalMat[2, 2]

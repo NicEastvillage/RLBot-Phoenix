@@ -10,6 +10,7 @@ import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
 import east.rlbot.simulation.turnRadius
 import east.rlbot.training.AerialOrientateTraining
+import east.rlbot.training.BallNudgerTraining
 import east.rlbot.training.Training
 import east.rlbot.util.DebugDraw
 import rlbot.Bot
@@ -35,7 +36,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
 
     var lastOutput: OutputController = OutputController()
 
-    var training: Training? = null
+    var training: Training? = BallNudgerTraining()
 
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()

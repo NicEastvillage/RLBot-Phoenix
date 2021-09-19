@@ -76,7 +76,7 @@ class Car(
         const val THROTTLE_AIR_ACC = 66.66f
 
         const val BOOST_USAGE_RATE = 33.3f
-        const val MIN_BOOST_TIME = 4 * DT // Maybe wrong, at most 0.1f though
+        const val MIN_BOOST_TIME = 13 * DT // https://youtu.be/mlWY6x8g5Ps?t=80
 
         const val WALL_STICKY_FORCE = 325f
         const val WALL_STICKY_TIME = 4 * DT

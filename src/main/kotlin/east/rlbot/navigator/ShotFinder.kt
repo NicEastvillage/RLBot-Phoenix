@@ -21,6 +21,7 @@ class ShotFinder(val bot: BaseBot) {
         DodgeStrike,
         ChipStrike,
         //CatchIntoDribble,
+        AerialStrike,
     )): Strike? {
         val slices = (SLICES_PR_SEC * timeLimit).toInt().coerceAtLeast(0)
         return BallPredictionManager.latest?.subList(0, slices)?.mapNotNull { ball ->
