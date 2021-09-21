@@ -25,6 +25,7 @@ data class FutureBall(
 class AdjustableFutureBall(
     ball: FutureBall
 ) {
+    val original = ball
     var ball: FutureBall = ball; private set
     val pos get() = ball.pos
     val vel get() = ball.vel
@@ -34,17 +35,17 @@ class AdjustableFutureBall(
 
     /**
      * Check if prediction changed. If the change is very small, update ball. If change is big, become invalid.
-     * Returns true if an adjustment was made
      */
-    fun adjust(allowErrorMargin: Float = 10f): Boolean {
-        BallPredictionManager.getAtTime(time)?.let { newPred ->
-            if (newPred.pos.distSqr(pos) < allowErrorMargin * allowErrorMargin) {
-                ball = newPred
-                return true
-            } else {
-                valid = false
-            }
+    fun adjust(allowErrorMargin: Float = 10f) {
+        val alternatives = BallPredictionManager.getBundleAtTime(time)
+        val closest = alternatives.minByOrNull { it.pos.distSqr(pos) }
+        if (closest == null ||
+            closest.pos.distSqr(pos) > allowErrorMargin * allowErrorMargin ||
+            closest.pos.distSqr(original.pos) > allowErrorMargin * allowErrorMargin * 1.5f
+        ) {
+            valid = false
+        } else {
+            ball = closest
         }
-        return false
     }
 }

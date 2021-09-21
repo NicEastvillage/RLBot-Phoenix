@@ -32,4 +32,14 @@ object BallPredictionManager {
         val i = ((time - lt) * SLICES_PR_SEC).toInt()
         return if (i in 0 until NR_OF_SLICES) latest?.get(i) else null
     }
+
+    fun getBundleAtTime(time: Float): List<FutureBall> {
+        val bundle = mutableListOf<FutureBall>()
+        val lt = latestTime ?: return bundle
+        val i = ((time - lt) * SLICES_PR_SEC).toInt()
+        if (i - 1 in 0 until NR_OF_SLICES) latest!![i - 1].let { bundle.add(it) }
+        if (i in 0 until NR_OF_SLICES) latest!![i].let { bundle.add(it) }
+        if (i + 1 in 0 until NR_OF_SLICES) latest!![i + 1].let { bundle.add(it) }
+        return bundle
+    }
 }

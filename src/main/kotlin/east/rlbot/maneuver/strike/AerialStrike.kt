@@ -28,6 +28,7 @@ class AerialStrike(
     override var done: Boolean = false
 
     private var initialized = false
+    private var beginTime = -1f
     private var jumping = false
     private var jumpBeginTime = -1f
     private var jumpPauseCounter = 0
@@ -35,6 +36,7 @@ class AerialStrike(
     override fun exec(data: DataPack): OutputController {
         if (!initialized) {
             initialized = true
+            beginTime = data.match.time
             jumping = data.me.wheelContact
             doSecondJump = doSecondJump && data.me.wheelContact
         }
@@ -146,15 +148,9 @@ class AerialStrike(
             }
         }
 
-        // One frame of braking
-        if (car.wheelContact && forwardSpeedDelta < 0f) {
-            // Ground acceleration is a lot more efficient, so let's make something of it
-            controls.withThrottle(forwardSpeedDelta / (Car.BRAKE_ACC * DT))
-        }
-
         done = !interceptBall.valid || // Ball prediction changed
-                timeLeft <= -0.2f //||
-                // (!jumping && car.wheelContact) // We landed after jumping
+                timeLeft <= -0.2f ||
+                (car.wheelContact && now - beginTime > 0.1f) // We landed after jumping
         if (done) {
             data.bot.maneuver = data.bot.shotFinder.findSoonestStrike(2.5f, listOf(AerialStrike))
         }
@@ -174,12 +170,13 @@ class AerialStrike(
     companion object Factory : StrikeFactory {
         override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
             val car = bot.data.me
+            if (car.boost < 20) return null
 
             if (car.wheelContact && car.timeWithWheelContact < 8 * DT) return null // We just landed
             if (ball.pos.z < JumpModel.single.maxHeight() + 2 * Ball.RADIUS) return null
 
             val localPos = car.toLocal(ball.pos)
-            if (localPos.x < 2400 && 0.01f * localPos.x.pow(1.4f) < abs(localPos.y)) return null // https://www.desmos.com/calculator/clgzwkpan1
+            if (localPos.x < 2400 && 0.008f * localPos.x.pow(1.4f) < abs(localPos.y)) return null // https://www.desmos.com/calculator/clgzwkpan1
 
             val up = car.ori.up
             val timeLeft = ball.time - bot.data.match.time
@@ -214,6 +211,10 @@ class AerialStrike(
 
                 val posDelta = desiredPos - expectedPos
                 val posDeltaDir = posDelta.dir()
+                val forwardSpeedDelta = posDelta dot car.ori.forward / timeLeft
+
+                // Do we have to acceleration backwards?
+                if (forwardSpeedDelta <= 0.5f * Car.THROTTLE_AIR_ACC * timeLeft) continue
 
                 // RLU magic checks
                 val oriAngle = car.ori.mat.angleTo(desiredOri)
