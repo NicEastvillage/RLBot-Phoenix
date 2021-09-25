@@ -1,5 +1,8 @@
 package east.rlbot.math
 
+import east.rlbot.data.Ball
+import east.rlbot.data.Car
+import east.rlbot.data.FutureBall
 import kotlin.math.sqrt
 
 operator fun Number.times(mat: Mat3): Mat3 = mat * this
@@ -31,4 +34,30 @@ fun tangentPoint(radius: Float, point: Vec3, side: Float = 1f): Vec3? {
     if (distSqr < radius * radius) return null // point is inside radius
     val offsetTowardsPoint = point2D * radius * radius / distSqr
     return offsetTowardsPoint - Vec3(-point2D.y, point2D.x) * side * radius * sqrt(distSqr - radius * radius) / distSqr
+}
+
+data class HitParameters(
+    val impulse: Vec3,
+    val hitNormal: Vec3,
+    val carPos: Vec3,
+    // carVel is any velocity where the component in the direction of the normal has a size equal to the impulse
+)
+
+/**
+ * Approximation figuring out how to change the ball's velocity to the desired velocity.
+ * TODO: Numeric method https://discord.com/channels/348658686962696195/535605770436345857/890257276076707950
+ */
+fun findHitParameters(ball: FutureBall, desiredBallVel: Vec3, carRadius: Float): HitParameters {
+    // We assume that the car has a spherical hitbox and that RL has normal physics
+    val deltaVel = desiredBallVel - ball.vel
+    val normal = deltaVel.dir()
+    val impulse = 2 * Ball.MASS * deltaVel / (Ball.MASS + Car.MASS)
+    val carPos = ball.pos - (carRadius + Ball.RADIUS) * normal
+
+    // carVel is any velocity where the component in the direction of the normal has a size equal to the impulse
+    return HitParameters(
+        impulse,
+        normal,
+        carPos,
+    )
 }

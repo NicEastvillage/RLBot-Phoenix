@@ -14,6 +14,7 @@ class Ball {
     }
 
     companion object {
+        const val MASS = 30f
         const val RADIUS = 92.1f
     }
 }

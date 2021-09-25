@@ -36,7 +36,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
 
     var lastOutput: OutputController = OutputController()
 
-    var training: Training? = BallNudgerTraining()
+    var training: Training? = null
 
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()

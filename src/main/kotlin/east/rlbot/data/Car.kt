@@ -69,6 +69,7 @@ class Car(
     fun rigidBody() = RigidBody(pos, vel)
 
     companion object {
+        const val MASS = 180f
         const val REST_HEIGHT = 17f
         const val MAX_SPEED = 2300f
         const val MAX_THROTTLE_SPEED = 2300f
