@@ -142,6 +142,8 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
         return Vec3(tx, ty, tz)
     }
 
+    fun perp2D(): Vec3 = Vec3(-y, x, z)
+
     fun dist(plane: Plane): Float {
         return abs((this - plane.offset) dot plane.normal)
     }

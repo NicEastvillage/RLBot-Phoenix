@@ -22,8 +22,8 @@ fun lerp(a: Float, b: Float, t: Float) = (1f - t) * a + t * b
 fun invLerp(a: Float, b: Float, v: Float) = (v - a) / (b - a)
 
 /**
- * Returns the intersection point of a 2D circle located at origin with the given radius and the tangent goes through
- * the given point.
+ * Returns the intersection point of a 2D circle and a tangent. The circle is located at origin with the given radius
+ * and the tangent goes through the given point.
  * When [side] is 1 the right-side tangent is returned, and when [side] is -1 the left-side tangent is returned.
  * `null` is returned when the given point is inside the radius, since no tangents exists in that case.
  */

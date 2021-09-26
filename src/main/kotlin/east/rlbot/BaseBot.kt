@@ -10,6 +10,7 @@ import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
 import east.rlbot.simulation.turnRadius
 import east.rlbot.training.AerialOrientateTraining
+import east.rlbot.training.ArcLineArcTest
 import east.rlbot.training.BallNudgerTraining
 import east.rlbot.training.Training
 import east.rlbot.util.DebugDraw
@@ -36,7 +37,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
 
     var lastOutput: OutputController = OutputController()
 
-    var training: Training? = null
+    var training: Training? = ArcLineArcTest()
 
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()
@@ -45,7 +46,10 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
         if (data.match.isFirstFrameOfKickOff) onKickoffBegin()
 
         // Get output
-        training?.exec(this)?.let { return it }
+        training?.exec(this)?.let {
+            draw.send()
+            return it
+        }
         val output = maneuver?.exec(data) ?: getOutput()
         draw.string2D(10, 560 + 20 * index, "$name: ${maneuver?.javaClass?.simpleName}", color = Color.WHITE)
         draw.send()
