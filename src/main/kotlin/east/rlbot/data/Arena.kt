@@ -74,7 +74,7 @@ object Arena {
         private const val ROUNDNESS = 300f
 
         private val ROT_45 = cos(Math.PI/4f)
-        private val ROT_45_MAT = Mat3.rotationMatrix(Vec3.UP, Math.PI / 4f)
+        private val ROT_45_MAT = Mat3.rotationMatrix(Vec3.UP, Math.PI.toFloat() / 4f)
         private val CORNER_SEMI_SIZE = Vec3(ROT_45 * CORNER_WALL_AX_INTERSECT, ROT_45 * CORNER_WALL_AX_INTERSECT, HEIGHT2)
 
         private val GOALS_SEMI_SIZE = Vec3(Goal.WIDTH2, LENGTH2 + Goal.DEPTH, Goal.HEIGHT / 2f)

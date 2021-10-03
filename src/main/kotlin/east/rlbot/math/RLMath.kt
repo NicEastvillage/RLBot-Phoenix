@@ -3,6 +3,9 @@ package east.rlbot.math
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.data.FutureBall
+import east.rlbot.simulation.AccelerationModel
+import east.rlbot.simulation.StraightAccelerationLUT
+import east.rlbot.simulation.timeSpentTurning
 import kotlin.math.sqrt
 
 operator fun Number.times(mat: Mat3): Mat3 = mat * this
@@ -38,7 +41,7 @@ fun tangentPoint(radius: Float, point: Vec3, side: Float = 1f): Vec3? {
 
 data class HitParameters(
     val impulse: Vec3,
-    val hitNormal: Vec3,
+    val hitDir: Vec3,
     val carPos: Vec3,
     // carVel is any velocity where the component in the direction of the normal has a size equal to the impulse
 )

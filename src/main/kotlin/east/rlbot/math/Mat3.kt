@@ -125,9 +125,9 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
             return Mat3(forward, right, upward)
         }
 
-        fun rotationMatrix(unitAxis: Vec3, rad: Double): Mat3 {
-            val cosTheta = cos(rad).toFloat()
-            val sinTheta = sin(rad).toFloat()
+        fun rotationMatrix(unitAxis: Vec3, rad: Float): Mat3 {
+            val cosTheta = cos(rad)
+            val sinTheta = sin(rad)
             val n1CosTheta = 1F - cosTheta
             val u = unitAxis
             return Mat3(arrayOf(

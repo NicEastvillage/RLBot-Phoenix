@@ -72,7 +72,7 @@ class Car(
         const val MASS = 180f
         const val REST_HEIGHT = 17f
         const val MAX_SPEED = 2300f
-        const val MAX_THROTTLE_SPEED = 2300f
+        const val MAX_THROTTLE_SPEED = 1410f
         const val COAST_ACC = 525f
         const val BRAKE_ACC = 3500f
         const val BOOST_BONUS_ACC = 991.66f

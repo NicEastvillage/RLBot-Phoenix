@@ -53,7 +53,7 @@ class DebugDraw(
 
         var arm = (normal cross center).dir() * radius
         val pieces = radius.pow(0.7f).toInt() + 5
-        val angle = 2 * Math.PI / pieces
+        val angle = 2 * Math.PI.toFloat() / pieces
         val rotMat = Mat3.rotationMatrix(normal.dir(), angle)
 
         val points = mutableListOf(center + arm)
