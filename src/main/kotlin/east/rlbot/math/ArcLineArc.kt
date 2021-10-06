@@ -4,6 +4,8 @@ import east.rlbot.data.Car
 import east.rlbot.data.FutureBall
 import east.rlbot.simulation.*
 import east.rlbot.util.DebugDraw
+import east.rlbot.util.PIf
+import east.rlbot.util.half
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.asin
@@ -86,24 +88,18 @@ class ArcLineArc(
 
         val pq1 = (tangentPoint1 - p1).dir()
         var _angle1 = 2.0f * sign(pq1 dot startDir) * asin(abs(pq1 dot startDirNormal))
-        if (_angle1 < 0.0f) _angle1 += 2.0f * Math.PI.toFloat()
+        if (_angle1 < 0.0f) _angle1 += 2.0f * PIf
         angle1 = _angle1
 
         val pq2 = (tangentPoint2 - p2).dir()
         var _angle2 = -2.0f * sign(pq2 dot endDir) * asin(abs(pq2 dot endDirNormal))
-        if (_angle2 < 0.0f) _angle2 += 2.0f * Math.PI.toFloat()
+        if (_angle2 < 0.0f) _angle2 += 2.0f * PIf
         angle2 = _angle2
 
         arc1Length = angle1 * abs(radius1)
         straightLength = tangentPoint2.dist(tangentPoint1)
         arc2Length = angle2 * abs(radius2)
         length = arc1Length + straightLength + arc2Length
-    }
-
-    fun draw(draw: DebugDraw) {
-        draw.circle(circle1Center.withZ(Car.REST_HEIGHT), Vec3.UP, abs(radius1))
-        draw.line(tangentPoint1.withZ(Car.REST_HEIGHT), tangentPoint2.withZ(Car.REST_HEIGHT))
-        draw.circle(circle2Center.withZ(Car.REST_HEIGHT), Vec3.UP, abs(radius2))
     }
 
     companion object {
@@ -128,6 +124,7 @@ class ArcLineArc(
         /**
          * Finds an ArcLineArc that hits the ball in the target direction, considering acceleration and more
          */
+        @Deprecated("Experimental")
         fun findSmart(
             car: Car,
             ball: FutureBall,
@@ -204,10 +201,8 @@ class ArcLineArc(
             val result = ArcLineArc(car.pos, startDir.dir2D(), hitParam.carPos.flat(), rot dot (hitParam.hitDir.dir2D()), initALA.radius1.sign * radius1, initALA.radius2.sign * curParams[0])
 
             if (draw != null) {
-                draw.color = Color.RED
-                initALA.draw(draw)
-                draw.color = Color.GREEN
-                result.draw(draw)
+                draw.arcLineArc(initALA, Color.RED)
+                draw.arcLineArc(result, Color.RED)
             }
 
             return result

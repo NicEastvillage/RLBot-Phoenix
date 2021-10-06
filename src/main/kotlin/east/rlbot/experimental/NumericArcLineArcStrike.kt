@@ -7,6 +7,7 @@ import east.rlbot.simulation.DriveModel
 import east.rlbot.simulation.timeSpentTurning
 import east.rlbot.simulation.turnRadius
 import east.rlbot.util.DebugDraw
+import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -127,8 +128,10 @@ class NumericArcLineArcStrike(
     }
 
     fun draw(draw: DebugDraw) {
-        ala.draw(draw)
+        draw.arcLineArc(ala)
         draw.line(ala.end.withZ(Car.REST_HEIGHT), (ala.end + ala.endDir * 300f).withZ(Car.REST_HEIGHT))
+        val cone = AimCone(hitParam.hitDir, 0.6f)
+        draw.aimCone(data.ball.pos, cone, color = Color.RED)
     }
 
     companion object {
