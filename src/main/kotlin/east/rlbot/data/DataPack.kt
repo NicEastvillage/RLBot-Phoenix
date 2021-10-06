@@ -22,7 +22,7 @@ class DataPack(val bot: BaseBot, val index: Int) {
 
     fun update(packet: GameTickPacket) {
 
-        ball.update(packet.ball())
+        ball.update(packet.ball(), packet.gameInfo().secondsElapsed())
         match.update(packet.gameInfo(), ball)
 
         BallPredictionManager.update(match.time)

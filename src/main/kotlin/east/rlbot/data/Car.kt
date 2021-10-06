@@ -3,6 +3,7 @@ package east.rlbot.data
 import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.RigidBody
+import east.rlbot.simulation.turnRadius
 import east.rlbot.util.DT
 import rlbot.flat.PlayerInfo
 
@@ -89,5 +90,7 @@ class Car(
 
         const val MAX_THROTTLE_TURN_SPEED = 1225 // Not actually max, but higher speeds take very long to achieve
         const val MAX_BOOST_TURN_SPEED = 2295
+
+        val TURN_RADIUS_AT_MAX_SPEED = turnRadius(2300f)
     }
 }
