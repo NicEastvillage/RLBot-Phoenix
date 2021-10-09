@@ -110,6 +110,8 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
 
     fun dir2D(): Vec3 = flat().dir()
 
+    fun dirTo2D(other: Vec3) = (other - this).flat().dir()
+
     infix fun dot(other: Vec3): Float {
         return x * other.x + y * other.y + z * other.z
     }

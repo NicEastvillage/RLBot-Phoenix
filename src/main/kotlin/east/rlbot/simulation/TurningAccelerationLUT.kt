@@ -4,14 +4,13 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import east.rlbot.data.Orientation
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
-import java.io.File
 import java.io.InputStream
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 class TurningAccelerationLUT(inputStream: InputStream) {
 
-    private val entries: List<Entry> = csvReader().readAllWithHeader(inputStream).map { row ->
+    val entries: List<Entry> = csvReader().readAllWithHeader(inputStream).map { row ->
         Entry(
             row["time"]!!.toFloat(),
             row["angle"]!!.toFloat(),
