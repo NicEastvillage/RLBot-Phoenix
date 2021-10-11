@@ -6,8 +6,8 @@ import east.rlbot.maneuver.Maneuver
 import east.rlbot.navigator.AerialMovement
 import east.rlbot.navigator.ShotFinder
 import east.rlbot.navigator.SimpleDriving
+import east.rlbot.training.AccAwareArcLineArcTest
 import east.rlbot.training.Training
-import east.rlbot.training.WeirdTest
 import east.rlbot.util.DebugDraw
 import rlbot.Bot
 import rlbot.ControllerState
@@ -27,7 +27,7 @@ abstract class BaseBot(private val index: Int, teamIndex: Int, val name: String)
 
     var lastOutput: OutputController = OutputController()
 
-    var training: Training? = WeirdTest()
+    var training: Training? = AccAwareArcLineArcTest()
 
     override fun processInput(request: GameTickPacket): ControllerState {
         draw.start()

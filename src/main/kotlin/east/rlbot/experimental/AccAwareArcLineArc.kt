@@ -11,10 +11,12 @@ import east.rlbot.simulation.AccelerationModel
 import east.rlbot.simulation.DriveModel
 import east.rlbot.simulation.timeSpentTurning
 import east.rlbot.simulation.turnRadius
+import east.rlbot.util.DT
 import east.rlbot.util.DebugDraw
 import east.rlbot.util.PIf
 import east.rlbot.util.half
 import java.awt.Color
+import kotlin.math.min
 
 data class AccAwareArcLineArc(
     val start1: Vec3,
@@ -31,16 +33,28 @@ data class AccAwareArcLineArc(
     //val length: Float,
     val duration: Float,
     val boostUsed: Float,
+    val speedAtStart2: Float,
 ) {
     val end1Dir = start2Dir
+
+    fun draw(draw: DebugDraw) {
+        draw.rect3D(end1.withZ(Car.REST_HEIGHT), 7, 7)
+        draw.rect3D(start2.withZ(Car.REST_HEIGHT), 7, 7)
+        draw.polyline(listOf(
+            start1.withZ(Car.REST_HEIGHT),
+            end1.withZ(Car.REST_HEIGHT),
+            start2.withZ(Car.REST_HEIGHT),
+            end2.withZ(Car.REST_HEIGHT),
+        ))
+    }
 }
 
 fun findAccAwareArcLineArc(
     car: Car,
     ball: FutureBall,
     target: Vec3,
-    draw: DebugDraw,
-    iterations: Int=25,
+    draw: DebugDraw?,
+    iterations: Int=35,
 ): AccAwareArcLineArc? {
 
     // sign1, sign2, boostAvailable
@@ -55,14 +69,14 @@ fun findAccAwareArcLineArc(
         Triple(-1f, -1f, 0),
     )
 
-    val start1 = car.pos.flat()
     val start1Dir = car.ori.forward.dir2D()
+    val start1 = car.pos.flat() + car.vel.flat() * 2f * DT
     val end2Dir = (target - ball.pos).dir2D()
-    val end2 = ball.pos.flat() - end2Dir * (Ball.RADIUS + car.hitbox.size.x / 2f)
+    val end2 = ball.pos.flat() - end2Dir * (Ball.RADIUS + car.hitbox.size.x / 2f + 20f)
 
     val ballOri = Mat3.lookingInDir(end2Dir * -1f)
 
-    val initSpeed = car.forwardSpeed()
+    val initSpeed = car.forwardSpeed() + 100f
     val initRadius2 = turnRadius(1000f)
 
     val paths = setups.mapNotNull { (sign1, sign2, boostAvailable) ->
@@ -70,7 +84,7 @@ fun findAccAwareArcLineArc(
         val initSignedAngle1 = sign1 * (start1Dir.atan2() - (end2 - start1).atan2())
         var angle1 = (if (initSignedAngle1 >= 0f) initSignedAngle1 else initSignedAngle1 + 2 * PIf) / 10f
         var radius2 = initRadius2
-        var aaala = AccAwareArcLineArc(start1, start1Dir, end2, end2Dir, Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, sign1, sign2, radius2, angle1, 0f, boostAvailable.toFloat())
+        var aaala = AccAwareArcLineArc(start1, start1Dir, end2, end2Dir, Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, sign1, sign2, radius2, angle1, 0f, boostAvailable.toFloat(), 0f)
 
         for (i in 0 until iterations) {
             val (end1, speedAtEnd1, time1) = if (initSpeed > 1210f) {
@@ -97,6 +111,7 @@ fun findAccAwareArcLineArc(
 
             val lineLength = start2.dist(end1)
             val driveRes = DriveModel.drive1D(lineLength, speedAtEnd1, boostAvailable.toFloat())
+            val arc2Speed = min(driveRes.endSpeed, 2070f)
             radius2 = lerp(radius2, turnRadius(driveRes.endSpeed), 0.8f)
 
             val start2Dir = end1.dirTo2D(start2)
@@ -118,26 +133,40 @@ fun findAccAwareArcLineArc(
                 angle1,
                 time1 + driveRes.timeSpent + time2,
                 driveRes.boostUsed,
+                driveRes.endSpeed,
             )
         }
 
         aaala
     }
 
-    val colors = listOf(Color.WHITE, Color.GREEN.half(), Color.CYAN.half(), Color.RED.half(), Color.MAGENTA.half(), Color.BLUE.half(), Color.YELLOW.half(), Color.PINK.half())
-    for ((i, path) in paths.sortedBy { it.duration }.withIndex().reversed()) {
-        //draw.circle(end2.withZ(Car.REST_HEIGHT) + ballOri.right() * path.radius2 * path.sign2, Vec3.UP, path.radius2, color = Color.GRAY)
+    if (draw != null) {
+        val colors = listOf(
+            Color.WHITE,
+            Color.GREEN.half(),
+            Color.CYAN.half(),
+            Color.RED.half(),
+            Color.MAGENTA.half(),
+            Color.BLUE.half(),
+            Color.YELLOW.half(),
+            Color.PINK.half()
+        )
+        for ((i, path) in paths.sortedBy { it.duration }.withIndex().reversed()) {
+            //draw.circle(end2.withZ(Car.REST_HEIGHT) + ballOri.right() * path.radius2 * path.sign2, Vec3.UP, path.radius2, color = Color.GRAY)
 
-        draw.color = colors[i]
-        draw.rect3D(path.end1.withZ(Car.REST_HEIGHT), 7, 7)
-        draw.rect3D(path.start2.withZ(Car.REST_HEIGHT), 7, 7)
-        draw.polyline(listOf(
-            start1.withZ(Car.REST_HEIGHT),
-            path.end1.withZ(Car.REST_HEIGHT),
-            path.start2.withZ(Car.REST_HEIGHT),
-            end2.withZ(Car.REST_HEIGHT),
-        ))
+            draw.color = colors[i]
+            draw.rect3D(path.end1.withZ(Car.REST_HEIGHT), 7, 7)
+            draw.rect3D(path.start2.withZ(Car.REST_HEIGHT), 7, 7)
+            draw.polyline(
+                listOf(
+                    start1.withZ(Car.REST_HEIGHT),
+                    path.end1.withZ(Car.REST_HEIGHT),
+                    path.start2.withZ(Car.REST_HEIGHT),
+                    end2.withZ(Car.REST_HEIGHT),
+                )
+            )
+        }
     }
 
-    return null
+    return paths.minByOrNull { it.duration }
 }
