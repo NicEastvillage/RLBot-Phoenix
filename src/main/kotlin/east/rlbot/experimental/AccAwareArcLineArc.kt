@@ -111,8 +111,8 @@ fun findAccAwareArcLineArc(
 
             val lineLength = start2.dist(end1)
             val driveRes = DriveModel.drive1D(lineLength, speedAtEnd1, boostAvailable.toFloat())
-            val arc2Speed = min(driveRes.endSpeed, 2070f)
-            radius2 = lerp(radius2, turnRadius(driveRes.endSpeed), 0.8f)
+            val arc2Speed = min(0.9f * driveRes.endSpeed, 2070f)
+            radius2 = lerp(radius2, turnRadius(arc2Speed), 0.8f)
 
             val start2Dir = end1.dirTo2D(start2)
             val signedAngle2 = sign2 * (start2Dir.atan2() - end2Dir.atan2())

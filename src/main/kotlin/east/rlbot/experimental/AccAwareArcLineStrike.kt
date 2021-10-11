@@ -26,14 +26,14 @@ class AccAwareArcLineStrike(
 
         return when (phase) {
             0 -> {
-                if (posSoon.dist(path.end1) < EPSILON) {
+                if (posSoon.dist(path.end1) <= EPSILON) {
                     phase = 1
                 }
 
                 data.bot.drive.towards(path.end1, Car.MAX_THROTTLE_SPEED, 100)
             }
             1 -> {
-                if (posSoon.dist(path.start2) < EPSILON) {
+                if (posSoon.dist(path.start2) <= 1.5f * EPSILON) {
                     phase = 2
                 }
 
@@ -43,7 +43,7 @@ class AccAwareArcLineStrike(
                     .withBoost(boostAvailable > 0)
             }
             else -> {
-                if (posSoon.dist(path.start2) < EPSILON) {
+                if (posSoon.dist(path.start2) <= EPSILON) {
                     phase = 2
                     done = true
                 }
