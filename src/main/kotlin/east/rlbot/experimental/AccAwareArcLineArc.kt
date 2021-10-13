@@ -31,6 +31,7 @@ data class AccAwareArcLineArc(
     val radius2: Float,
     val angle1: Float,
     //val length: Float,
+    val arc1Duration: Float,
     val duration: Float,
     val boostUsed: Float,
     val speedAtStart2: Float,
@@ -84,7 +85,7 @@ fun findAccAwareArcLineArc(
         val initSignedAngle1 = sign1 * (start1Dir.atan2() - (end2 - start1).atan2())
         var angle1 = (if (initSignedAngle1 >= 0f) initSignedAngle1 else initSignedAngle1 + 2 * PIf) / 10f
         var radius2 = initRadius2
-        var aaala = AccAwareArcLineArc(start1, start1Dir, end2, end2Dir, Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, sign1, sign2, radius2, angle1, 0f, boostAvailable.toFloat(), 0f)
+        var aaala = AccAwareArcLineArc(start1, start1Dir, end2, end2Dir, Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, sign1, sign2, radius2, angle1, 0f, 0f, boostAvailable.toFloat(), 0f)
 
         for (i in 0 until iterations) {
             val (end1, speedAtEnd1, time1) = if (initSpeed > 1210f) {
@@ -111,7 +112,7 @@ fun findAccAwareArcLineArc(
 
             val lineLength = start2.dist(end1)
             val driveRes = DriveModel.drive1D(lineLength, speedAtEnd1, boostAvailable.toFloat())
-            val arc2Speed = min(0.9f * driveRes.endSpeed, 2070f)
+            val arc2Speed = min(0.93f * driveRes.endSpeed, Car.MAX_BOOST_TURN_SPEED)
             radius2 = lerp(radius2, turnRadius(arc2Speed), 0.8f)
 
             val start2Dir = end1.dirTo2D(start2)
@@ -131,6 +132,7 @@ fun findAccAwareArcLineArc(
                 sign2,
                 radius2,
                 angle1,
+                time1,
                 time1 + driveRes.timeSpent + time2,
                 driveRes.boostUsed,
                 driveRes.endSpeed,

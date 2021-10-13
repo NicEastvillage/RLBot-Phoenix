@@ -14,6 +14,7 @@ class AccAwareArcLineStrike(
 
     var init = false
     var boostAvailable = 0f
+    var startTime = 0f
     var phase = 0
 
     override fun exec(data: DataPack): OutputController? {
@@ -22,15 +23,16 @@ class AccAwareArcLineStrike(
         if (!init) {
             init = true
             boostAvailable = path.boostUsed
+            startTime = data.match.time
         }
 
         return when (phase) {
             0 -> {
-                if (posSoon.dist(path.end1) <= EPSILON) {
+                if (posSoon.dist(path.end1) <= EPSILON || startTime + path.arc1Duration + 0.3f <= data.match.time) {
                     phase = 1
                 }
 
-                data.bot.drive.towards(path.end1, Car.MAX_THROTTLE_SPEED, 100)
+                data.bot.drive.towards(path.start2, Car.MAX_THROTTLE_SPEED, 100)
             }
             1 -> {
                 if (posSoon.dist(path.start2) <= 1.5f * EPSILON) {
