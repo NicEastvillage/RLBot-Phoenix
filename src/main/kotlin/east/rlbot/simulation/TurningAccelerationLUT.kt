@@ -1,7 +1,6 @@
 package east.rlbot.simulation
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import east.rlbot.data.Orientation
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 import java.io.InputStream
@@ -54,7 +53,7 @@ class TurningAccelerationLUT(inputStream: InputStream) {
 
         // Find displacement relative to start position and angle
         val displacement = startEntry.localDisplacement - resultEntry.localDisplacement
-        val startOri = Orientation(Mat3.eulerToRotation(0f, startEntry.angle, 0f))
+        val startOri = Mat3.eulerToRotation(0f, startEntry.angle, 0f)
         val localDisplacement = startOri.toLocal(displacement)
 
         return LookupResult(

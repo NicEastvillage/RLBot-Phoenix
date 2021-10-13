@@ -1,7 +1,6 @@
 package east.rlbot.util
 
 import east.rlbot.data.Car
-import east.rlbot.data.Orientation
 import east.rlbot.math.*
 import rlbot.cppinterop.RLBotDll
 import rlbot.cppinterop.RLBotInterfaceException
@@ -44,7 +43,7 @@ class DebugDraw(
         }
     }
 
-    fun orientedOrigin(center: Vec3, ori: Orientation, size: Float = 125f, forwardColor: Color = Color.RED, rightColor: Color = Color.GREEN, upColor: Color = Color.BLUE) {
+    fun orientedOrigin(center: Vec3, ori: Mat3, size: Float = 125f, forwardColor: Color = Color.RED, rightColor: Color = Color.GREEN, upColor: Color = Color.BLUE) {
         line(center, center + ori.forward * size, forwardColor)
         line(center, center + ori.right * size, rightColor)
         line(center, center + ori.up * size, upColor)

@@ -1,5 +1,6 @@
 package east.rlbot.data
 
+import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.RigidBody
@@ -14,7 +15,7 @@ class Car(
 ) {
     lateinit var pos: Vec3
     lateinit var vel: Vec3
-    lateinit var ori: Orientation
+    lateinit var ori: Mat3
     lateinit var angVel: Vec3
     lateinit var hitboxCenter: Vec3
     lateinit var hitbox: OrientedCube
@@ -48,7 +49,7 @@ class Car(
         val phy = player.physics()
         pos = Vec3(phy.location())
         vel = Vec3(phy.velocity())
-        ori = Orientation.fromEuler(phy.rotation().pitch(), phy.rotation().yaw(), phy.rotation().roll())
+        ori = Mat3.eulerToRotation(phy.rotation().pitch(), phy.rotation().yaw(), phy.rotation().roll())
         angVel = Vec3(phy.angularVelocity().x(), phy.angularVelocity().y(), phy.angularVelocity().z())
         hitboxCenter = pos + ori.toGlobal(Vec3((player.hitboxOffset())))
         val hb = player.hitbox()

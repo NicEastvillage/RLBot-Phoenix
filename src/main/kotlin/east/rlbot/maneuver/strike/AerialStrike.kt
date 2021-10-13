@@ -217,7 +217,7 @@ class AerialStrike(
                 if (forwardSpeedDelta <= 0.5f * Car.THROTTLE_AIR_ACC * timeLeft) continue
 
                 // RLU magic checks
-                val oriAngle = car.ori.mat.angleTo(desiredOri)
+                val oriAngle = car.ori.angleTo(desiredOri)
                 val turnTime = 0.75f * 2 * sqrt(oriAngle / 9f)
                 val tau1 = turnTime * (1f - 0.3f / oriAngle).coerceIn01()
 
