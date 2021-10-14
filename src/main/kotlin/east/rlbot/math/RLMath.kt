@@ -3,10 +3,9 @@ package east.rlbot.math
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.data.FutureBall
-import east.rlbot.simulation.AccelerationModel
-import east.rlbot.simulation.StraightAccelerationLUT
-import east.rlbot.simulation.timeSpentTurning
+import east.rlbot.util.PIf
 import kotlin.math.sqrt
+
 
 operator fun Number.times(mat: Mat3): Mat3 = mat * this
 operator fun Number.times(vec: Vec3): Vec3 = vec * this
@@ -18,6 +17,37 @@ fun clamp(value: Float, min: Float, max: Float) = value.coerceIn(min, max)
  * Linear interpolation
  */
 fun lerp(a: Float, b: Float, t: Float) = (1f - t) * a + t * b
+
+/**
+ * Linear interpolation but on angles (between 0 and 2 PI), taking the shortest path.
+ */
+fun lerpAng(a: Float, b: Float, t: Float): Float {
+    // https://gist.github.com/itsmrpeck/be41d72e9d4c72d2236de687f6f53974
+
+    var b = b
+    var result: Float
+    val diff = b - a
+    if (diff < -PIf) {
+        // lerp upwards past PI_TIMES_TWO
+        b += 2 * PIf
+        result = lerp(a, b, t)
+        if (result >= 2 * PIf) {
+            result -= 2 * PIf
+        }
+    } else if (diff > PIf) {
+        // lerp downwards past 0
+        b -= 2 * PIf
+        result = lerp(a, b, t)
+        if (result < 0f) {
+            result += 2 * PIf
+        }
+    } else {
+        // straight lerp
+        result = lerp(a, b, t)
+    }
+
+    return result
+}
 
 /**
  * Inverse linear interpolation

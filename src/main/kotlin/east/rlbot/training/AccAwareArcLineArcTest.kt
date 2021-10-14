@@ -5,9 +5,7 @@ import east.rlbot.OutputController
 import east.rlbot.data.Arena
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
-import east.rlbot.experimental.AccAwareArcLineArc
 import east.rlbot.experimental.AccAwareArcLineStrike
-import east.rlbot.experimental.findAccAwareArcLineArc
 import east.rlbot.math.Vec3
 import east.rlbot.util.PIf
 import rlbot.cppinterop.RLBotDll
@@ -19,13 +17,12 @@ import kotlin.random.Random
 
 class AccAwareArcLineArcTest : Training {
 
-    private val INTERVAL = 5f
+    private val INTERVAL = 13f
     private val CREATE_TICK_DELAY = 3
 
     var next = 7f
     var counter = -2
 
-    private var path: AccAwareArcLineArc? = null
     private var strike: AccAwareArcLineStrike? = null
 
     override fun exec(bot: BaseBot): OutputController? {
@@ -73,23 +70,23 @@ class AccAwareArcLineArcTest : Training {
         }
 
         if (counter == -1) {
-            path = findAccAwareArcLineArc(
+            strike = AccAwareArcLineStrike(
                 bot.data.me,
-                bot.data.ball.asFuture(),
+                bot.data.ball.asFuture().adjustable(),
                 bot.data.enemyGoal.pos,
-                bot.draw,
             )
-            strike = path?.let {
-                next = bot.data.match.time + it.duration + 2f
-                AccAwareArcLineStrike(it)
-            }
+            next = bot.data.match.time + (strike!!.aaaala.getBest()?.aaala?.duration ?: (INTERVAL - 2)) + 2
         }
 
         bot.draw.color = Color.WHITE
-        path?.draw(bot.draw)
+        strike?.aaaala?.draw(bot.draw)
 
         counter--
 
-        return strike?.exec(bot.data) ?: OutputController()
+        val output = strike?.exec(bot.data)
+
+        return if (strike?.carIndex == 0) {
+            output ?: OutputController()
+        } else OutputController()
     }
 }

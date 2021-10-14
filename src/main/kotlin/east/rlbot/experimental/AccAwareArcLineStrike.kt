@@ -1,51 +1,91 @@
 package east.rlbot.experimental
 
 import east.rlbot.OutputController
+import east.rlbot.data.AdjustableFutureBall
+import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.maneuver.Maneuver
+import east.rlbot.math.Vec3
 import east.rlbot.util.DT
 
 class AccAwareArcLineStrike(
-    val path: AccAwareArcLineArc,
+    car: Car,
+    val ball: AdjustableFutureBall,
+    val target: Vec3,
 ) : Maneuver {
+
+    val carIndex = car.index
 
     override var done: Boolean = false
 
+    val aaaala: AdjustableAAALA
+
     var init = false
-    var boostAvailable = 0f
     var startTime = 0f
     var phase = 0
 
+    init {
+        val start = car.pos.flat()
+        val startDir = car.ori.forward.dir2D()
+        val startSpeed = car.forwardSpeed()
+        val shootDir = ball.pos.dirTo2D(target)
+        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+
+        aaaala = AdjustableAAALA(
+            start,
+            startDir,
+            startSpeed,
+            car.boost.toFloat(),
+            end,
+            shootDir,
+        )
+    }
+
     override fun exec(data: DataPack): OutputController? {
-        val car = data.me
-        val posSoon = car.pos + car.vel * DT
+
+        val car = data.allCars[carIndex]
+        val posSoon2D = car.pos.flat() + car.vel * DT
+
         if (!init) {
             init = true
-            boostAvailable = path.boostUsed
             startTime = data.match.time
         }
 
+        val start = car.pos.flat()
+        val startDir = car.ori.forward.dir2D()
+        val startSpeed = car.forwardSpeed()
+        val shootDir = ball.pos.dirTo2D(target)
+        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+
+        aaaala.adjust(
+            start,
+            startDir,
+            startSpeed,
+            car.boost.toFloat(),
+            end,
+            shootDir,
+        )
+
+        val path = aaaala.getBest()!!.aaala
+
         return when (phase) {
             0 -> {
-                if (posSoon.dist(path.end1) <= EPSILON || startTime + path.arc1Duration + 0.3f <= data.match.time) {
+                if (posSoon2D.dist(path.end1) <= EPSILON || startTime + path.arc1Duration + 0.3f <= data.match.time) {
                     phase = 1
                 }
 
                 data.bot.drive.towards(path.start2, Car.MAX_THROTTLE_SPEED, 100)
             }
             1 -> {
-                if (posSoon.dist(path.start2) <= 1.5f * EPSILON) {
+                if (posSoon2D.dist(path.start2) <= 1.5f * EPSILON) {
                     phase = 2
                 }
 
-                boostAvailable -= DT * Car.BOOST_USAGE_RATE
-
                 data.bot.drive.towards(path.start2, path.speedAtStart2, 0)
-                    .withBoost(boostAvailable > 0)
             }
             else -> {
-                if (posSoon.dist(path.start2) <= EPSILON) {
+                if (posSoon2D.dist(path.start2) <= EPSILON) {
                     phase = 2
                     done = true
                 }
@@ -56,6 +96,6 @@ class AccAwareArcLineStrike(
     }
 
     companion object {
-        const val EPSILON = 45f
+        const val EPSILON = 40f
     }
 }
