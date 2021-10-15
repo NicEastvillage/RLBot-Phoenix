@@ -8,6 +8,8 @@ class Goal private constructor(val team: Team) {
     val middle = pos.withZ(HEIGHT / 2f)
     val left = pos.withX(team.ysign * WIDTH2)
     val right = pos.withX(-team.ysign * WIDTH2)
+    val leftPadded = pos.withX(team.ysign * (WIDTH2 - Ball.RADIUS))
+    val rightPadded = pos.withX(-team.ysign * (WIDTH2 - Ball.RADIUS))
 
     companion object {
         const val WIDTH = 1786f
