@@ -12,6 +12,7 @@ import rlbot.cppinterop.RLBotDll
 import rlbot.gamestate.*
 import java.awt.Color
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
@@ -37,7 +38,7 @@ class AccAwareArcLineArcTest : Training {
             val ballY = 0.9f * Arena.LENGTH2 * Random.nextFloat()
             val ballPos = Vec3(ballX, ballY, Ball.RADIUS + 1f)
 
-            val carX = 0.9f * (- Arena.WIDTH2 + Arena.WIDTH * Random.nextFloat())
+            val carX = min(0.9f * (- Arena.WIDTH2 + Arena.WIDTH * Random.nextFloat()), ballX + 4000f)
             val carY = 0.9f * (- Arena.LENGTH2 + Arena.LENGTH * Random.nextFloat())
             val carPos = Vec3(carX, carY, Car.REST_HEIGHT + 1f)
 

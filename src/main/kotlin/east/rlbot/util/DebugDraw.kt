@@ -177,7 +177,9 @@ class DebugDraw(
 
     fun aimCone(pos: Vec3, cone: AimCone, size: Float = 120f, color: Color = this.color) {
         line(pos, pos + size * cone.centerDir, color)
-        circle(pos + sin(cone.angle) * size * cone.centerDir, cone.centerDir, cos(cone.angle) * size, color)
+        line(pos, pos + size * cone.clamp(cone.centerDir.perp2D()), color)
+        line(pos, pos + size * cone.clamp(cone.centerDir.perp2D().perp2D().perp2D()), color)
+        circle(pos + cos(cone.angle) * size * cone.centerDir, cone.centerDir, sin(cone.angle) * size, color)
     }
 
     fun ballTrajectory(duration: Float, color: Color = this.color) {

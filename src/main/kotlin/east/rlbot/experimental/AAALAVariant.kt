@@ -111,6 +111,7 @@ class AAALAVariant(
             val signedAngle2 = sign2 * (start2Dir.atan2() - end2Dir.atan2())
             val angle2 = if (signedAngle2 >= 0f) signedAngle2 else signedAngle2 + 2 * PIf
             val time2 = timeSpentTurning(driveRes.endSpeed, angle2)
+            radius2 *= correctionForTurningWheels(angle2)
 
             aaala = AccAwareArcLineArc(
                 start1,
@@ -130,5 +131,9 @@ class AAALAVariant(
                 driveRes.endSpeed,
             )
         }
+    }
+
+    private fun correctionForTurningWheels(ang: Float): Float {
+        return 1f / (13f * ang + 3f) + 0.9f
     }
 }

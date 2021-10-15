@@ -1,11 +1,9 @@
 package east.rlbot.experimental
 
 import east.rlbot.OutputController
-import east.rlbot.data.AdjustableFutureBall
-import east.rlbot.data.Ball
-import east.rlbot.data.Car
-import east.rlbot.data.DataPack
+import east.rlbot.data.*
 import east.rlbot.maneuver.Maneuver
+import east.rlbot.math.AimCone
 import east.rlbot.math.Vec3
 import east.rlbot.util.DT
 
@@ -55,8 +53,8 @@ class AccAwareArcLineStrike(
         val start = car.pos.flat()
         val startDir = car.ori.forward.dir2D()
         val startSpeed = car.forwardSpeed()
-        val shootDir = ball.pos.dirTo2D(target)
-        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+        val shootDir = AimCone.atGoal(ball.pos, Goal[car.team.other()]).clamp(car.pos.dirTo2D(ball.pos))
+        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 30f)
 
         aaaala.adjust(
             start,
