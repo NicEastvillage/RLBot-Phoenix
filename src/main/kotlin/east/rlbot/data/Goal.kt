@@ -8,6 +8,8 @@ class Goal private constructor(val team: Team) {
     val middle = pos.withZ(HEIGHT / 2f)
     val left = pos.withX(team.ysign * WIDTH2)
     val right = pos.withX(-team.ysign * WIDTH2)
+    val leftPadded = pos.withX(team.ysign * (WIDTH2 - 2 * Ball.RADIUS))
+    val rightPadded = pos.withX(-team.ysign * (WIDTH2 - 2 * Ball.RADIUS))
 
     companion object {
         const val WIDTH = 1786f
@@ -17,7 +19,7 @@ class Goal private constructor(val team: Team) {
 
         val goals = listOf(Goal(Team.BLUE), Goal(Team.ORANGE))
 
-        fun get(team: Team) = goals[team.index]
-        fun get(team: Int) = goals[team]
+        operator fun get(team: Team) = goals[team.index]
+        operator fun get(team: Int) = goals[team]
     }
 }

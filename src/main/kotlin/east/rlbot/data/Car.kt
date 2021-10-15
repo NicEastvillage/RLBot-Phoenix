@@ -1,8 +1,10 @@
 package east.rlbot.data
 
+import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.RigidBody
+import east.rlbot.simulation.turnRadius
 import east.rlbot.util.DT
 import rlbot.flat.PlayerInfo
 
@@ -13,7 +15,7 @@ class Car(
 ) {
     lateinit var pos: Vec3
     lateinit var vel: Vec3
-    lateinit var ori: Orientation
+    lateinit var ori: Mat3
     lateinit var angVel: Vec3
     lateinit var hitboxCenter: Vec3
     lateinit var hitbox: OrientedCube
@@ -47,7 +49,7 @@ class Car(
         val phy = player.physics()
         pos = Vec3(phy.location())
         vel = Vec3(phy.velocity())
-        ori = Orientation.fromEuler(phy.rotation().pitch(), phy.rotation().yaw(), phy.rotation().roll())
+        ori = Mat3.eulerToRotation(phy.rotation().pitch(), phy.rotation().yaw(), phy.rotation().roll())
         angVel = Vec3(phy.angularVelocity().x(), phy.angularVelocity().y(), phy.angularVelocity().z())
         hitboxCenter = pos + ori.toGlobal(Vec3((player.hitboxOffset())))
         val hb = player.hitbox()
@@ -72,7 +74,7 @@ class Car(
         const val MASS = 180f
         const val REST_HEIGHT = 17f
         const val MAX_SPEED = 2300f
-        const val MAX_THROTTLE_SPEED = 2300f
+        const val MAX_THROTTLE_SPEED = 1410f
         const val COAST_ACC = 525f
         const val BRAKE_ACC = 3500f
         const val BOOST_BONUS_ACC = 991.66f
@@ -87,7 +89,9 @@ class Car(
         const val JUMP_HOLD_FORCE = 292f * 5
         const val MAX_JUMP_HOLD_TIME = 0.2f
 
-        const val MAX_THROTTLE_TURN_SPEED = 1225 // Not actually max, but higher speeds take very long to achieve
-        const val MAX_BOOST_TURN_SPEED = 2295
+        const val MAX_THROTTLE_TURN_SPEED = 1225f // Not actually max, but higher speeds take very long to achieve
+        const val MAX_BOOST_TURN_SPEED = 2295f
+
+        val TURN_RADIUS_AT_MAX_SPEED = turnRadius(2300f)
     }
 }

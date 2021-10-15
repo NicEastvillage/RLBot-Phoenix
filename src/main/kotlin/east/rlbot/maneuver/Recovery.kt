@@ -3,7 +3,6 @@ package east.rlbot.maneuver
 import east.rlbot.OutputController
 import east.rlbot.data.Arena
 import east.rlbot.data.DataPack
-import east.rlbot.data.Orientation
 import east.rlbot.math.Mat3
 import east.rlbot.simulation.Physics
 
@@ -31,7 +30,7 @@ class Recovery : Maneuver {
                 val right = fallDir cross normal
                 val forward = normal cross right
                 val ori = Mat3(forward, right, normal)
-                data.bot.draw.orientedOrigin(intersectPoint, Orientation(ori))
+                data.bot.draw.orientedOrigin(intersectPoint, ori)
                 return ori
             }
             prevPos = rb.pos

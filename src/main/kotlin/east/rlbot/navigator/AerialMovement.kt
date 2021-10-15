@@ -21,8 +21,8 @@ class AerialMovement(val bot: BaseBot) {
 
         val controls = OutputController()
 
-        val localForward = bot.data.me.ori.toLocal(targetOri.forward())
-        val localUp = bot.data.me.ori.toLocal(targetOri.up())
+        val localForward = bot.data.me.ori.toLocal(targetOri.forward)
+        val localUp = bot.data.me.ori.toLocal(targetOri.up)
         val localAngVel = bot.data.me.ori.toLocal(bot.data.me.angVel)
 
         val pitchAng = atan2(-localForward.z, localForward.x)
@@ -38,14 +38,14 @@ class AerialMovement(val bot: BaseBot) {
         val Dp = 0.8f
 
         val yawScale =
-            if (upIsImportant) (targetOri.up() dot bot.data.me.ori.up).let { if (it > 0.5f) it.pow(1.5f) else 0f }
+            if (upIsImportant) (targetOri.up dot bot.data.me.ori.up).let { if (it > 0.5f) it.pow(1.5f) else 0f }
             else 1f
         val Py = -3.8f
         val Dy = 0.9f
 
         val rollScale =
             if (upIsImportant) 1f
-            else (targetOri.forward() dot bot.data.me.ori.forward).let { if (it > 0.5f) it.pow(1.5f) else 0f }
+            else (targetOri.forward dot bot.data.me.ori.forward).let { if (it > 0.5f) it.pow(1.5f) else 0f }
         val Pr = -3.3f
         val Dr = 0.5f
 

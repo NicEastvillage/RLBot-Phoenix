@@ -64,29 +64,33 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
     }
 
 
-    fun forward(): Vec3 {
-        return Vec3(
+    val forward = Vec3(
                 this.internalMat[0, 0],
                 this.internalMat[1, 0],
                 this.internalMat[2, 0]
         )
-    }
 
-    fun right(): Vec3 {
-        return Vec3(
+    val right = Vec3(
                 this.internalMat[0, 1],
                 this.internalMat[1, 1],
                 this.internalMat[2, 1]
         )
-    }
 
-    fun up(): Vec3 {
-        return Vec3(
+    val up = Vec3(
                 this.internalMat[0, 2],
                 this.internalMat[1, 2],
                 this.internalMat[2, 2]
         )
-    }
+
+    /**
+     * Returns target as seen from this orientation
+     */
+    fun toLocal(target: Vec3) = transpose() dot target
+
+    /**
+     * Returns local target in global orientation
+     */
+    fun toGlobal(target: Vec3) = this dot target
 
     /**
      * https://github.com/samuelpmish/RLUtilities/blob/f071b4dec24d3389f21727ca2d95b75980cbb5fb/RLUtilities/cpp/inc/linalg.h#L71-L74
@@ -113,7 +117,7 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
         }
 
         fun lookingAt(from: Vec3, target: Vec3, up: Vec3 = Vec3.UP): Mat3 {
-            return lookingInDir(target - from)
+            return lookingInDir(target - from, up)
         }
 
         fun lookingInDir(direction: Vec3, up: Vec3 = Vec3.UP): Mat3 {
@@ -125,9 +129,9 @@ class Mat3(internal val internalMat: FMatrixRMaj) {
             return Mat3(forward, right, upward)
         }
 
-        fun rotationMatrix(unitAxis: Vec3, rad: Double): Mat3 {
-            val cosTheta = cos(rad).toFloat()
-            val sinTheta = sin(rad).toFloat()
+        fun rotationMatrix(unitAxis: Vec3, rad: Float): Mat3 {
+            val cosTheta = cos(rad)
+            val sinTheta = sin(rad)
             val n1CosTheta = 1F - cosTheta
             val u = unitAxis
             return Mat3(arrayOf(

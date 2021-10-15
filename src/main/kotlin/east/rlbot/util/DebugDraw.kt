@@ -1,12 +1,12 @@
 package east.rlbot.util
 
-import east.rlbot.data.Orientation
+import east.rlbot.data.Car
 import east.rlbot.math.*
 import rlbot.cppinterop.RLBotDll
 import rlbot.cppinterop.RLBotInterfaceException
 import java.awt.Color
 import java.awt.Point
-import kotlin.math.pow
+import kotlin.math.*
 
 class DebugDraw(
     val renderer: BasicRenderer,
@@ -43,7 +43,7 @@ class DebugDraw(
         }
     }
 
-    fun orientedOrigin(center: Vec3, ori: Orientation, size: Float = 125f, forwardColor: Color = Color.RED, rightColor: Color = Color.GREEN, upColor: Color = Color.BLUE) {
+    fun orientedOrigin(center: Vec3, ori: Mat3, size: Float = 125f, forwardColor: Color = Color.RED, rightColor: Color = Color.GREEN, upColor: Color = Color.BLUE) {
         line(center, center + ori.forward * size, forwardColor)
         line(center, center + ori.right * size, rightColor)
         line(center, center + ori.up * size, upColor)
@@ -53,7 +53,23 @@ class DebugDraw(
 
         var arm = (normal cross center).dir() * radius
         val pieces = radius.pow(0.7f).toInt() + 5
-        val angle = 2 * Math.PI / pieces
+        val angle = 2 * PIf / pieces
+        val rotMat = Mat3.rotationMatrix(normal.dir(), angle)
+
+        val points = mutableListOf(center + arm)
+        for (i in 0 until pieces) {
+            arm = rotMat dot arm
+            points.add(center + arm)
+        }
+
+        polyline(points, color)
+    }
+
+    fun arc(center: Vec3, normal: Vec3, arm: Vec3, radians: Float, color: Color = this.color) {
+        val frac = abs(radians).coerceIn(0f, 2f * PIf) / (2f * PIf)
+        var arm = arm
+        val pieces = ((arm.mag().pow(0.7f) + 5f) * frac).toInt()
+        val angle = radians.coerceIn(-2f * PIf, 2f * PIf) / pieces
         val rotMat = Mat3.rotationMatrix(normal.dir(), angle)
 
         val points = mutableListOf(center + arm)
@@ -143,6 +159,27 @@ class DebugDraw(
         line(center + Vec3(0, 0, r), center + Vec3(0, -r, 0), color)
         line(center + Vec3(0, -r, 0), center + Vec3(0, 0, -r), color)
         line(center + Vec3(0, 0, -r), center + Vec3(0, r, 0), color)
+    }
+
+    fun arcLineArc(ala: ArcLineArc, color: Color = this.color, secColor: Color = color.half()) {
+        ala.run {
+            arc(circle1Center.withZ(Car.REST_HEIGHT), Vec3.UP, tangentPoint1 - circle1Center, -angle1 * radius1.sign)
+            line(circle1Center.withZ(Car.REST_HEIGHT), start.withZ(Car.REST_HEIGHT), secColor)
+            line(circle1Center.withZ(Car.REST_HEIGHT), tangentPoint1.withZ(Car.REST_HEIGHT), secColor)
+
+            line(tangentPoint1.withZ(Car.REST_HEIGHT), tangentPoint2.withZ(Car.REST_HEIGHT))
+
+            arc(circle2Center.withZ(Car.REST_HEIGHT), Vec3.UP, tangentPoint2 - circle2Center, angle2 * radius2.sign)
+            line(circle2Center.withZ(Car.REST_HEIGHT), tangentPoint2.withZ(Car.REST_HEIGHT), secColor)
+            line(circle2Center.withZ(Car.REST_HEIGHT), end.withZ(Car.REST_HEIGHT), secColor)
+        }
+    }
+
+    fun aimCone(pos: Vec3, cone: AimCone, size: Float = 120f, color: Color = this.color) {
+        line(pos, pos + size * cone.centerDir, color)
+        line(pos, pos + size * cone.clamp(cone.centerDir.perp2D()), color)
+        line(pos, pos + size * cone.clamp(cone.centerDir.perp2D().perp2D().perp2D()), color)
+        circle(pos + cos(cone.angle) * size * cone.centerDir, cone.centerDir, sin(cone.angle) * size, color)
     }
 
     fun ballTrajectory(duration: Float, color: Color = this.color) {

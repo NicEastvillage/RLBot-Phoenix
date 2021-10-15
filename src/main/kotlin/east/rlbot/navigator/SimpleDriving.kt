@@ -6,14 +6,11 @@ import east.rlbot.data.BoostPadManager
 import east.rlbot.data.Car
 import east.rlbot.math.Vec3
 import east.rlbot.math.tangentPoint
-import east.rlbot.simulation.AccelerationModel
-import east.rlbot.simulation.StraightAccelerationLUT
-import east.rlbot.simulation.timeSpentTurning
-import east.rlbot.simulation.turnRadius
+import east.rlbot.simulation.*
+import east.rlbot.util.PIf
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlin.math.pow
 import kotlin.math.sign
 
 
@@ -81,11 +78,12 @@ class SimpleDriving(val bot: BaseBot) {
     /**
      * Estimate the minimum time needed to reach the given position from the current position.
      * Returns null if the target position is withing turn radius.
+     * TODO: Return endspeed and boost used too
      */
-    fun estimateTime2D(pos: Vec3, boostAvailable: Int = bot.data.me.boost, draw: Boolean = false): Float? {
+    fun estimateTime2D(pos: Vec3, boostAvailable: Float = bot.data.me.boost.toFloat(), draw: Boolean = false): Float? {
 
         val car = bot.data.me
-        var currentSpeed = car.forwardSpeed()
+        val currentSpeed = car.forwardSpeed()
 
         // TODO Consider acceleration during turning. This probably has to be found iteratively
         // Turning, assuming constant speed
@@ -97,7 +95,7 @@ class SimpleDriving(val bot: BaseBot) {
         val localTangentPoint = (tangentPoint(radius, localPosOffset, turnSign) ?: return null) + Vec3(y=turnSign * radius)
         // Where we end up after turning
         val tangentPoint = car.toGlobal(localTangentPoint)
-        val angle = ((localTangentPoint - Vec3(y=turnSign * radius)).atan2() + turnSign * Math.PI.toFloat() / 2f).absoluteValue
+        val angle = ((localTangentPoint - Vec3(y=turnSign * radius)).atan2() + turnSign * PIf / 2f).absoluteValue
 
         if (draw) {
             val mid = car.pos + car.ori.right * turnSign * radius
@@ -115,32 +113,9 @@ class SimpleDriving(val bot: BaseBot) {
             }
         }
 
-        var distLeft = tangentPoint.dist2D(pos)
-        var timeSpent = timeSpentTurning(currentSpeed, angle)
+        val distLeft = tangentPoint.dist2D(pos)
+        val timeSpent = timeSpentTurning(currentSpeed, angle)
 
-        var accelerationResult: StraightAccelerationLUT.LookupResult? = null
-
-        // Accelerate with boost
-        if (boostAvailable > 0) {
-            val boostTime = boostAvailable / Car.BOOST_USAGE_RATE
-            accelerationResult = AccelerationModel.boost.simUntilLimit(currentSpeed, distanceLimit = distLeft, timeLimit = boostTime)
-            distLeft -= accelerationResult.distance
-            timeSpent += accelerationResult.duration
-            currentSpeed = accelerationResult.endSpeed
-        }
-
-        // Accelerate with throttle
-        if (distLeft > 0f && currentSpeed <= Car.MAX_THROTTLE_SPEED) {
-            accelerationResult = AccelerationModel.throttle.simUntilLimit(currentSpeed, distanceLimit = distLeft)
-            distLeft -= accelerationResult.distance
-            timeSpent += accelerationResult.duration
-            currentSpeed = accelerationResult.endSpeed
-        }
-
-        // If distance was not reached during acceleration, travel remain distance with constant speed
-        if (accelerationResult == null || accelerationResult.distanceLimitReached)
-            timeSpent += distLeft / currentSpeed
-
-        return timeSpent
+        return timeSpent + DriveModel.drive1D(distLeft, currentSpeed, boostAvailable).timeSpent
     }
 }
