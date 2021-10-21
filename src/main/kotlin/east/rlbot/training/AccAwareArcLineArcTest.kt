@@ -75,9 +75,9 @@ class AccAwareArcLineArcTest : Training {
         }
 
         if (counter == -1 || strike?.done == true) {
-            val factory = AccAwareArcLineStrike.Factory(bot.data.me, bot.data.enemyGoal.pos)
+            val factory = AccAwareArcLineStrike.Factory(bot.data.me)
             strike = BallPredictionManager.latest?.asSequence()?.mapNotNull { ball ->
-                factory.tryCreate(bot, ball)
+                factory.tryCreate(bot.data, ball, bot.data.enemyGoal.middle)
             }?.firstOrNull() as AccAwareArcLineStrike?
 
             if (counter == -1)
@@ -91,7 +91,7 @@ class AccAwareArcLineArcTest : Training {
 
         val output = strike?.exec(bot.data)
 
-        return if (strike?.carIndex == 0) {
+        return if (strike?.car == bot.data.me) {
             output ?: OutputController()
         } else OutputController()
     }

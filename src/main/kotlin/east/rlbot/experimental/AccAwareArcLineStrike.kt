@@ -1,6 +1,5 @@
 package east.rlbot.experimental
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.*
 import east.rlbot.maneuver.strike.Strike
@@ -11,12 +10,10 @@ import east.rlbot.util.DT
 import kotlin.math.abs
 
 class AccAwareArcLineStrike(
-    car: Car,
+    val car: Car,
     val ball: AdjustableFutureBall,
     val target: Vec3,
 ) : Strike(ball) {
-
-    val carIndex = car.index
 
     override var done: Boolean = false
 
@@ -45,7 +42,6 @@ class AccAwareArcLineStrike(
 
     override fun exec(data: DataPack): OutputController {
 
-        val car = data.allCars[carIndex]
         val posSoon2D = car.pos.flat() + car.vel * DT
 
         if (!init) {
@@ -113,16 +109,16 @@ class AccAwareArcLineStrike(
         const val EPSILON = 40f
     }
 
-    class Factory(val car: Car, val target: Vec3) : StrikeFactory {
-        override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
+    class Factory(val car: Car) : StrikeFactory {
+        override fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike? {
             if (ball.pos.z > 190 - abs(ball.vel.z) / 5f || abs(ball.vel.z) > 280) return null
 
             // Cheap overestimation of arrive time
             val minTime = car.pos.dist(ball.pos) / Car.MAX_SPEED
-            if (bot.data.match.time + minTime > ball.time) return null
+            if (data.match.time + minTime > ball.time) return null
 
             val strike = AccAwareArcLineStrike(car, ball.adjustable(), target)
-            if (abs(ball.time - bot.data.match.time - strike.aaaala.getBest()!!.aaala.duration) < 0.05f)
+            if (abs(ball.time - data.match.time - strike.aaaala.getBest()!!.aaala.duration) < 0.05f)
                 return strike
             return null
         }

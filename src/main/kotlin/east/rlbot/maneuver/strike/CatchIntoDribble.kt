@@ -1,9 +1,9 @@
 package east.rlbot.maneuver.strike
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.*
 import east.rlbot.maneuver.Recovery
+import east.rlbot.math.Vec3
 import java.awt.Color
 import kotlin.math.min
 
@@ -44,16 +44,16 @@ class CatchIntoDribble(
     }
 
     companion object Factory : StrikeFactory {
-        override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
+        override fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike? {
+            val car = data.me
             if (Ball.RADIUS + Car.REST_HEIGHT < ball.pos.z) return null
 
-            val target = bot.data.enemyGoal.middle
             val ballToTargetDir = ball.pos.dirTo(target)
             val desiredBallVel = ballToTargetDir * min(ball.vel.mag(), 300f)
             val arriveDir = (desiredBallVel - ball.vel).dir()
-            val arrivePos = (ball.pos - arriveDir * (Ball.RADIUS + bot.data.me.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
+            val arrivePos = (ball.pos - arriveDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 
-            if (bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE > ball.time - bot.data.match.time) return null
+            if ((data.bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE) > ball.time - data.match.time) return null
 
             return CatchIntoDribble(ball.adjustable())
         }

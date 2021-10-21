@@ -3,7 +3,6 @@ package east.rlbot.experimental
 import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.math.Vec3
-import east.rlbot.simulation.turnRadius
 import east.rlbot.util.DebugDraw
 import east.rlbot.util.half
 import java.awt.Color
@@ -21,8 +20,6 @@ class AdjustableAAALA(
     private val variants: List<AAALAVariant>
 
     init {
-
-        val initRadius2 = turnRadius(1000f)
 
         // sign1, sign2, doBoost
         val setups = listOf(

@@ -1,11 +1,11 @@
 package east.rlbot.maneuver.strike
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.*
 import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
+import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
 import east.rlbot.simulation.Physics.GRAVITY
 import east.rlbot.util.DT
@@ -168,8 +168,8 @@ class AerialStrike(
     }
 
     companion object Factory : StrikeFactory {
-        override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
-            val car = bot.data.me
+        override fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike? {
+            val car = data.me
             if (car.boost < 20) return null
 
             if (car.wheelContact && car.timeWithWheelContact < 8 * DT) return null // We just landed
@@ -179,7 +179,7 @@ class AerialStrike(
             if (localPos.x < 2400 && 0.008f * localPos.x.pow(1.4f) < abs(localPos.y)) return null // https://www.desmos.com/calculator/clgzwkpan1
 
             val up = car.ori.up
-            val timeLeft = ball.time - bot.data.match.time
+            val timeLeft = ball.time - data.match.time
             val dodgePossible = timeLeft < Car.MAX_JUMP_HOLD_TIME + 1.25 && car.wheelContact // TODO Replace wheelcontact with hasDoubleJump
             val scenarios = if (dodgePossible) listOf(true, false) else listOf(false)
 

@@ -1,18 +1,18 @@
 package east.rlbot.maneuver.strike
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.AdjustableFutureBall
 import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
-import east.rlbot.maneuver.Maneuver
 import east.rlbot.maneuver.Recovery
+import east.rlbot.math.Vec3
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.min
 
 class ChipStrike(
+    var car: Car,
     interceptBall: AdjustableFutureBall,
 ) : Strike(interceptBall) {
 
@@ -47,19 +47,19 @@ class ChipStrike(
     }
 
     companion object Factory : StrikeFactory {
-        override fun tryCreate(bot: BaseBot, ball: FutureBall): ChipStrike? {
+        override fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike? {
+            val car = data.me
             if (ball.pos.z > 190 - abs(ball.vel.z) / 5f || abs(ball.vel.z) > 280) return null
-            if (ball.vel.flat().mag() > 200f && ball.vel.angle2D(bot.data.me.vel) < 1.3f) return null
+            if (ball.vel.flat().mag() > 200f && ball.vel.angle2D(car.vel) < 1.3f) return null
 
-            val target = bot.data.enemyGoal.middle
             val ballToTargetDir = ball.pos.dirTo(target)
             val desiredBallVel = ballToTargetDir * min(ball.vel.mag(), 300f)
             val arriveDir = (desiredBallVel - ball.vel).dir()
             val arrivePos = (ball.pos - arriveDir * 100).withZ(Car.REST_HEIGHT)
 
-            if (bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE > ball.time - bot.data.match.time) return null
+            if ((data.bot.drive.estimateTime2D(arrivePos) ?: Float.MAX_VALUE) > ball.time - data.match.time) return null
 
-            return ChipStrike(ball.adjustable())
+            return ChipStrike(car, ball.adjustable())
         }
     }
 }

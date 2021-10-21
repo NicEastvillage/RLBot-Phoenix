@@ -1,11 +1,11 @@
 package east.rlbot.maneuver.strike
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.AdjustableFutureBall
 import east.rlbot.data.DataPack
 import east.rlbot.data.FutureBall
 import east.rlbot.maneuver.Maneuver
+import east.rlbot.math.Vec3
 
 abstract class Strike(
     var interceptBall: AdjustableFutureBall,
@@ -14,5 +14,5 @@ abstract class Strike(
 }
 
 interface StrikeFactory {
-    fun tryCreate(bot: BaseBot, ball: FutureBall): Strike?
+    fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike?
 }
