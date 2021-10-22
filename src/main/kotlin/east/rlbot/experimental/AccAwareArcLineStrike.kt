@@ -1,19 +1,20 @@
 package east.rlbot.experimental
 
 import east.rlbot.OutputController
-import east.rlbot.data.*
+import east.rlbot.data.AdjustableAimedFutureBall
+import east.rlbot.data.Ball
+import east.rlbot.data.Car
+import east.rlbot.data.DataPack
 import east.rlbot.maneuver.strike.Strike
 import east.rlbot.maneuver.strike.StrikeFactory
-import east.rlbot.math.AimCone
-import east.rlbot.math.Vec3
 import east.rlbot.util.DT
+import java.awt.Color
 import kotlin.math.abs
 
 class AccAwareArcLineStrike(
     val car: Car,
-    val ball: AdjustableFutureBall,
-    val target: Vec3,
-) : Strike(ball) {
+    aimedBall: AdjustableAimedFutureBall
+) : Strike(aimedBall) {
 
     override var done: Boolean = false
 
@@ -24,11 +25,12 @@ class AccAwareArcLineStrike(
     var phase = 0
 
     init {
-        val start = car.pos.flat()
+        val start = (car.pos + car.vel * 2 * DT).flat()
         val startDir = car.ori.forward.dir2D()
         val startSpeed = car.forwardSpeed()
-        val shootDir = ball.pos.dirTo2D(target)
-        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+        val shootDir = aimedBall.aimCone.clamp(aimedBall.pos - start).dir2D()
+        val end = aimedBall.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+        val endDir = aimedBall.aimCone.withAngle(aimedBall.aimCone.angle + 0.3f).clamp(aimedBall.pos - start).dir2D()
 
         aaaala = AdjustableAAALA(
             start,
@@ -36,7 +38,7 @@ class AccAwareArcLineStrike(
             startSpeed,
             car.boost.toFloat(),
             end,
-            shootDir,
+            endDir,
         )
     }
 
@@ -49,13 +51,13 @@ class AccAwareArcLineStrike(
             startTime = data.match.time
         }
 
-        ball.adjust()
+        aimedBall.adjust()
 
-        val start = car.pos.flat()
+        val start = (car.pos + car.vel * DT).flat()
         val startDir = car.ori.forward.dir2D()
         val startSpeed = car.forwardSpeed()
-        val shootDir = AimCone.atGoal(ball.pos, Goal[car.team.other()]).clamp(car.pos.dirTo2D(ball.pos))
-        val end = ball.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 30f)
+        val end = aimedBall.pos.flat() - aimedBall.aimCone.centerDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
+        val endDir = aimedBall.aimCone.clamp(aimedBall.pos - start).dir2D()
 
         aaaala.adjust(
             start,
@@ -63,12 +65,14 @@ class AccAwareArcLineStrike(
             startSpeed,
             car.boost.toFloat(),
             end,
-            shootDir,
+            endDir,
         )
 
         val path = aaaala.getBest()!!.aaala
+        data.bot.draw.color = Color.WHITE
+        path.draw(data.bot.draw)
 
-        done = !ball.valid || ball.time - data.match.time - path.duration < -0.25f || path.duration.isNaN()
+        done = !aimedBall.valid || aimedBall.time - data.match.time - path.duration < -0.25f || path.duration.isNaN()
 
         val controls = when (phase) {
             0 -> {
@@ -95,7 +99,7 @@ class AccAwareArcLineStrike(
             }
         }
 
-        val coast = ball.time - data.match.time - path.duration > 0f
+        val coast = aimedBall.time - data.match.time - path.duration > 0f
         if (coast) {
             // We are arriving too early, so we coast a bit
             controls.withThrottle(0.2f)
@@ -110,15 +114,15 @@ class AccAwareArcLineStrike(
     }
 
     class Factory(val car: Car) : StrikeFactory {
-        override fun tryCreate(data: DataPack, ball: FutureBall, target: Vec3): Strike? {
-            if (ball.pos.z > 190 - abs(ball.vel.z) / 5f || abs(ball.vel.z) > 280) return null
+        override fun tryCreate(data: DataPack, aimedBall: AdjustableAimedFutureBall): Strike? {
+            if (aimedBall.pos.z > 190 - abs(aimedBall.vel.z) / 5f || abs(aimedBall.vel.z) > 280) return null
 
             // Cheap overestimation of arrive time
-            val minTime = car.pos.dist(ball.pos) / Car.MAX_SPEED
-            if (data.match.time + minTime > ball.time) return null
+            val minTime = car.pos.dist(aimedBall.pos) / Car.MAX_SPEED
+            if (data.match.time + minTime > aimedBall.time) return null
 
-            val strike = AccAwareArcLineStrike(car, ball.adjustable(), target)
-            if (abs(ball.time - data.match.time - strike.aaaala.getBest()!!.aaala.duration) < 0.05f)
+            val strike = AccAwareArcLineStrike(car, aimedBall)
+            if (abs(aimedBall.time - data.match.time - strike.aaaala.getBest()!!.aaala.duration) < 0.04f)
                 return strike
             return null
         }

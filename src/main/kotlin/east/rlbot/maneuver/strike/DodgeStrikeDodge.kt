@@ -1,24 +1,27 @@
 package east.rlbot.maneuver.strike
 
 import east.rlbot.OutputController
-import east.rlbot.data.*
+import east.rlbot.data.AdjustableAimedFutureBall
+import east.rlbot.data.Ball
+import east.rlbot.data.Car
+import east.rlbot.data.DataPack
 import east.rlbot.maneuver.DodgeFinish
-import east.rlbot.maneuver.Recovery
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
-import java.awt.Color
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.min
+import kotlin.math.pow
 
 class DodgeStrikeDodge(
-    interceptBall: AdjustableFutureBall,
-) : Strike(interceptBall) {
+    aimedBall: AdjustableAimedFutureBall,
+) : Strike(aimedBall) {
 
     private val FIRST_JUMP_PAUSE_DURATION = 0.02f
 
     override var done = false
 
-    private var expectedFirstJumpDuration = JumpModel.single.simUntilLimit(heightLimit = interceptBall.pos.z).time
+    private var expectedFirstJumpDuration = JumpModel.single.simUntilLimit(heightLimit = aimedBall.pos.z).time
 
     private var initialized = false
     private var jumping = true
@@ -31,8 +34,8 @@ class DodgeStrikeDodge(
             startTime = data.match.time
         }
         val car = data.me
-        interceptBall.adjust()
-        val height = interceptBall.pos.z
+        aimedBall.adjust()
+        val height = aimedBall.pos.z
 
         val jumpTimeLeft = (startTime + expectedFirstJumpDuration - data.match.time).coerceAtLeast(0f)
 
@@ -41,9 +44,9 @@ class DodgeStrikeDodge(
         val xyDisplacementDuringJumpWithoutBoost = car.vel.flat() * (jumpTimeLeft + FIRST_JUMP_PAUSE_DURATION)
         val xyDisplacementDuringJumpWithBoost = car.ori.forward.flat() * Car.BOOST_BONUS_ACC * boostDuration.pow(2) / 2 + xyDisplacementDuringJumpWithoutBoost
         val expectedDodgePos = (car.pos + xyDisplacementDuringJumpWithoutBoost).withZ(height)
-        val boost = expectedDodgePos.dist(interceptBall.pos) > Ball.RADIUS + car.hitbox.size.x / 2f + 10f
+        val boost = expectedDodgePos.dist(aimedBall.pos) > Ball.RADIUS + car.hitbox.size.x / 2f + 10f
 
-        val ori = Mat3.lookingAt(car.pos, interceptBall.pos)
+        val ori = Mat3.lookingAt(car.pos, aimedBall.pos)
         val controls = data.bot.fly.align(ori).withJump(jumping).withBoost(boost)
 
         // Do phase change?
@@ -51,7 +54,7 @@ class DodgeStrikeDodge(
             jumping = false
             jumpEndTime = data.match.time
         } else if (!jumping && jumpEndTime + FIRST_JUMP_PAUSE_DURATION <= data.match.time) {
-            data.bot.maneuver = DodgeFinish(interceptBall.pos)
+            data.bot.maneuver = DodgeFinish(aimedBall.pos)
         }
 
         if (car.wheelContact && data.match.time - startTime > 0.03f) {
@@ -64,9 +67,9 @@ class DodgeStrikeDodge(
 
     fun canBegin(data: DataPack): Boolean {
         val car = data.me
-        val height = interceptBall.pos.z
+        val height = aimedBall.pos.z
         val result = JumpModel.single.simUntilLimit(heightLimit = height)
-        val timeLeft = interceptBall.time - data.match.time
+        val timeLeft = aimedBall.time - data.match.time
         val boostTime = min(car.boost / Car.BOOST_USAGE_RATE, result.time)
         val xyDisplacementDuringJumpWithoutBoost = car.vel.flat() * (result.time + 0.02f)
         val xyDisplacementDuringJumpWithBoost = car.ori.forward.flat() * Car.BOOST_BONUS_ACC * boostTime.pow(2) / 2 + xyDisplacementDuringJumpWithoutBoost
@@ -77,7 +80,7 @@ class DodgeStrikeDodge(
         val N = 5
         for (i in 0..N) {
             val expectedDodgePosF = expectedDodgePosWithoutBoost + xyDisplacementDuringJumpWithBoost * (i / N.toFloat())
-            expectedDodgePosIsGood = expectedDodgePosIsGood || expectedDodgePosF.dist(interceptBall.pos) < Ball.RADIUS + car.hitbox.size.x / 2f + 10f
+            expectedDodgePosIsGood = expectedDodgePosIsGood || expectedDodgePosF.dist(aimedBall.pos) < Ball.RADIUS + car.hitbox.size.x / 2f + 10f
         }
 
         // Since we are jumping immediately, difference between timeLeft and jump time should be very small

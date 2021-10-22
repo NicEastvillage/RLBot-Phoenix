@@ -1,5 +1,6 @@
 package east.rlbot.data
 
+import east.rlbot.math.AimCone
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.BallPredictionManager
 import rlbot.flat.PredictionSlice
@@ -36,7 +37,7 @@ class AdjustableFutureBall(
     /**
      * Check if prediction changed. If the change is very small, update ball. If change is big, become invalid.
      */
-    fun adjust(allowErrorMargin: Float = 10f) {
+    fun adjust(allowErrorMargin: Float = 15f) {
         val alternatives = BallPredictionManager.getBundleAtTime(time)
         val closest = alternatives.minByOrNull { it.pos.distSqr(pos) }
         if (closest == null ||
@@ -47,5 +48,27 @@ class AdjustableFutureBall(
         } else {
             ball = closest
         }
+    }
+}
+
+class AdjustableAimedFutureBall(
+    ball: FutureBall,
+    private val aimFactory: (FutureBall) -> AimCone,
+) {
+    val ball = AdjustableFutureBall(ball)
+    val pos get() = ball.pos
+    val vel get() = ball.vel
+    val time get() = ball.time
+    val valid get() = ball.valid
+
+    var aimCone = aimFactory(ball); private set
+
+    /**
+     * Check if prediction changed. If the change is very small, update ball. If change is big, become invalid.
+     * Then update the aim cone.
+     */
+    fun adjust(allowErrorMargin: Float = 15f) {
+        ball.adjust(allowErrorMargin)
+        aimCone = aimFactory(ball.ball)
     }
 }

@@ -20,6 +20,8 @@ class AimCone(
         return (rot dot udir) * dir.mag()
     }
 
+    fun withAngle(angle: Float) = AimCone(centerDir, angle)
+
     companion object {
         fun atGoal(from: Vec3, goal: Goal): AimCone {
             val dirToRight = from.dirTo2D(goal.rightPadded)

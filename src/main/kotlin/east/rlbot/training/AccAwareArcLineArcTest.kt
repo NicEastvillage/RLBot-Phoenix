@@ -2,10 +2,12 @@ package east.rlbot.training
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.AdjustableAimedFutureBall
 import east.rlbot.data.Arena
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.experimental.AccAwareArcLineStrike
+import east.rlbot.math.AimCone
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.BallPredictionManager
 import east.rlbot.util.PIf
@@ -77,7 +79,9 @@ class AccAwareArcLineArcTest : Training {
         if (counter == -1 || strike?.done == true) {
             val factory = AccAwareArcLineStrike.Factory(bot.data.me)
             strike = BallPredictionManager.latest?.asSequence()?.mapNotNull { ball ->
-                factory.tryCreate(bot.data, ball, bot.data.enemyGoal.middle)
+                factory.tryCreate(bot.data, AdjustableAimedFutureBall(ball) {
+                    AimCone.atGoal(it.pos, bot.data.enemyGoal)
+                })
             }?.firstOrNull() as AccAwareArcLineStrike?
 
             if (counter == -1)
