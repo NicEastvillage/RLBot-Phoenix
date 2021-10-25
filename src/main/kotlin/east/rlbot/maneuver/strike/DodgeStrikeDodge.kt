@@ -9,6 +9,7 @@ import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
+import east.rlbot.util.DT
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.pow
@@ -17,7 +18,7 @@ class DodgeStrikeDodge(
     aimedBall: AdjustableAimedFutureBall,
 ) : Strike(aimedBall) {
 
-    private val FIRST_JUMP_PAUSE_DURATION = 0.02f
+    private val FIRST_JUMP_PAUSE_DURATION = 2 * DT
 
     override var done = false
 

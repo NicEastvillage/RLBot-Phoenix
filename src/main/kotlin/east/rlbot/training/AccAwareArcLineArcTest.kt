@@ -6,7 +6,7 @@ import east.rlbot.data.AdjustableAimedFutureBall
 import east.rlbot.data.Arena
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
-import east.rlbot.experimental.AccAwareArcLineStrike
+import east.rlbot.experimental.AAALAStrike
 import east.rlbot.math.AimCone
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.BallPredictionManager
@@ -27,7 +27,7 @@ class AccAwareArcLineArcTest : Training {
     var next = 7f
     var counter = -2
 
-    private var strike: AccAwareArcLineStrike? = null
+    private var strike: AAALAStrike? = null
 
     override fun exec(bot: BaseBot): OutputController? {
         if (bot.index != 0) return null
@@ -77,12 +77,12 @@ class AccAwareArcLineArcTest : Training {
         }
 
         if (counter == -1 || strike?.done == true) {
-            val factory = AccAwareArcLineStrike.Factory(bot.data.me)
+            val factory = AAALAStrike.Factory(bot.data.me)
             strike = BallPredictionManager.latest?.asSequence()?.mapNotNull { ball ->
                 factory.tryCreate(bot.data, AdjustableAimedFutureBall(ball) {
                     AimCone.atGoal(it.pos, bot.data.enemyGoal)
                 })
-            }?.firstOrNull() as AccAwareArcLineStrike?
+            }?.firstOrNull() as AAALAStrike?
 
             if (counter == -1)
                 next = bot.data.match.time + (strike?.aaaala?.getBest()?.aaala?.duration ?: (INTERVAL - 3f)) + 3f

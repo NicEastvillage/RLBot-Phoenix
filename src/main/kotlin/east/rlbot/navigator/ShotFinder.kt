@@ -3,7 +3,7 @@ package east.rlbot.navigator
 import east.rlbot.BaseBot
 import east.rlbot.data.AdjustableAimedFutureBall
 import east.rlbot.data.Arena
-import east.rlbot.experimental.AccAwareArcLineStrike
+import east.rlbot.experimental.AAALAStrike
 import east.rlbot.maneuver.Maneuver
 import east.rlbot.maneuver.strike.*
 import east.rlbot.math.AimCone
@@ -13,7 +13,7 @@ import east.rlbot.simulation.SLICES_PR_SEC
 
 class ShotFinder(val bot: BaseBot) {
 
-    val aaalaFactory = AccAwareArcLineStrike.Factory(bot.data.me)
+    val aaalaFactory = AAALAStrike.Factory(bot.data.me)
 
     fun shootAt(
         target: Vec3

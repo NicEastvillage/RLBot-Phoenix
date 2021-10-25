@@ -8,12 +8,12 @@ import east.rlbot.util.half
 import java.awt.Color
 
 class AdjustableAAALA(
-    start: Vec3,
-    startDir: Vec3,
-    startSpeed: Float,
-    boostTotal: Float,
-    end: Vec3,
-    endDir: Vec3,
+    var start: Vec3,
+    var startDir: Vec3,
+    var startSpeed: Float,
+    var boostTotal: Float,
+    var end: Vec3,
+    var endDir: Vec3,
     iterations: Int=35,
 ) {
 
@@ -93,6 +93,13 @@ class AdjustableAAALA(
         endDir: Vec3,
         iterations: Int = 3,
     ) {
+        this.start = start
+        this.startDir = startDir
+        this.startSpeed = startSpeed
+        this.boostTotal = boostTotal
+        this.end = end
+        this.endDir = endDir
+
         for (variant in variants) {
             variant.adjust(
                 start,

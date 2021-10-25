@@ -11,7 +11,7 @@ import east.rlbot.util.DT
 import java.awt.Color
 import kotlin.math.abs
 
-class AccAwareArcLineStrike(
+class AAALAStrike(
     val car: Car,
     aimedBall: AdjustableAimedFutureBall
 ) : Strike(aimedBall) {
@@ -32,7 +32,7 @@ class AccAwareArcLineStrike(
         val end = aimedBall.pos.flat() - shootDir * (Ball.RADIUS + car.hitbox.size.x / 2f + 8f)
         val endDir = aimedBall.aimCone.withAngle(aimedBall.aimCone.angle + 0.3f).clamp(aimedBall.pos - start).dir2D()
 
-        aaaala = AdjustableAAALA(
+        aaaala = AAALAFactory.create(
             start,
             startDir,
             startSpeed,
@@ -121,7 +121,7 @@ class AccAwareArcLineStrike(
             val minTime = car.pos.dist(aimedBall.pos) / Car.MAX_SPEED
             if (data.match.time + minTime > aimedBall.time) return null
 
-            val strike = AccAwareArcLineStrike(car, aimedBall)
+            val strike = AAALAStrike(car, aimedBall)
             if (abs(aimedBall.time - data.match.time - strike.aaaala.getBest()!!.aaala.duration) < 0.04f)
                 return strike
             return null
