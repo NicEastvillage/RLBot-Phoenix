@@ -32,7 +32,7 @@ class DodgeStrike(
         aimedBall.adjust()
 
         // Find positions and directions
-        val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 750f)
+        val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 750f)
         val arriveDir = (desiredBallVel - aimedBall.vel).dir()
         val arrivePos = (aimedBall.pos - arriveDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 
@@ -59,7 +59,7 @@ class DodgeStrike(
             if (JumpModel.single.maxHeight() + Ball.RADIUS / 5f < aimedBall.pos.z) return null
             if (aimedBall.vel.flat().mag() > 230f && aimedBall.vel.angle2D(car.vel) < 1.3f) return null
 
-            val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 300f)
+            val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 300f)
             val arriveDir = (desiredBallVel - aimedBall.vel).dir()
             val arrivePos = (aimedBall.pos - arriveDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 

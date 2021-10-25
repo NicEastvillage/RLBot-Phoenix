@@ -27,7 +27,7 @@ class CatchIntoDribble(
 
         aimedBall.adjust()
 
-        val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 300f)
+        val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 300f)
 
         val arriveDir = (desiredBallVel - aimedBall.vel).dir()
         val arrivePos = (aimedBall.pos - arriveDir * (Ball.RADIUS + data.me.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
@@ -48,7 +48,7 @@ class CatchIntoDribble(
             val car = data.me
             if (Ball.RADIUS + Car.REST_HEIGHT < aimedBall.pos.z) return null
 
-            val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 300f)
+            val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 300f)
             val arriveDir = (desiredBallVel - aimedBall.vel).dir()
             val arrivePos = (aimedBall.pos - arriveDir * (Ball.RADIUS + car.hitbox.size.x / 2f)).withZ(Car.REST_HEIGHT)
 

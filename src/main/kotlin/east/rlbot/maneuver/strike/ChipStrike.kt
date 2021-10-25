@@ -28,7 +28,7 @@ class ChipStrike(
 
         aimedBall.adjust()
 
-        val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 750f)
+        val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 750f)
 
         val arriveDir = (desiredBallVel - aimedBall.vel).dir()
         val arrivePos = (aimedBall.pos - arriveDir * 100).withZ(Car.REST_HEIGHT)
@@ -48,7 +48,7 @@ class ChipStrike(
             if (aimedBall.pos.z > 190 - abs(aimedBall.vel.z) / 5f || abs(aimedBall.vel.z) > 280) return null
             if (aimedBall.vel.flat().mag() > 200f && aimedBall.vel.angle2D(car.vel) < 1.3f) return null
 
-            val desiredBallVel = aimedBall.aimCone.centerDir * -max(aimedBall.vel.mag(), 300f)
+            val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 300f)
             val arriveDir = (desiredBallVel - aimedBall.vel).dir()
             val arrivePos = (aimedBall.pos - arriveDir * 100).withZ(Car.REST_HEIGHT)
 
