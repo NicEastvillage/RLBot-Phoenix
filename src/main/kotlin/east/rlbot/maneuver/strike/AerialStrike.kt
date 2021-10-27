@@ -8,6 +8,7 @@ import east.rlbot.data.DataPack
 import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
+import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
 import east.rlbot.simulation.Physics.GRAVITY
 import east.rlbot.util.DT
@@ -133,7 +134,7 @@ class AerialStrike(
             val scale = if (jumping) 0.5f else 1f // Slower rotation during jumping
 
             val pd = if (bigPosDelta)
-                data.bot.fly.align(Mat3.lookingInDir(posDelta))
+                data.bot.fly.align(Mat3.lookingInDir(posDelta * Vec3(1f, 1f, 1.02f)))
             else
                 data.bot.fly.align(desiredOri)
 

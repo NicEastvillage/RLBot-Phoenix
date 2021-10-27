@@ -29,8 +29,6 @@ class DodgeStrike(
         if (!car.wheelContact)
             data.bot.maneuver = Recovery()
 
-        aimedBall.adjust()
-
         // Find positions and directions
         val desiredBallVel = aimedBall.aimCone.centerDir * max(aimedBall.vel.mag(), 750f)
         val arriveDir = (desiredBallVel - aimedBall.vel).dir()
@@ -39,6 +37,11 @@ class DodgeStrike(
         // Find speed
         val timeLeft = aimedBall.time - data.match.time
         val speed = car.pos.dist(arrivePos) / timeLeft
+
+        // Adjust ball using estimated time
+        val time = data.bot.drive.estimateTime2D(arrivePos)
+        if (time != null)
+            aimedBall.adjust(betterTime = time)
 
         // Start dodge?
         if (dodgeStrikeDodge.canBegin(data))

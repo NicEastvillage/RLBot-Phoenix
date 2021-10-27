@@ -53,7 +53,7 @@ class AAALAStrike(
             startTime = data.match.time
         }
 
-        aimedBall.adjust(allowErrorMargin = 25f)
+        aimedBall.adjust(betterTime = aaaala.getBest()!!.aaala.duration, allowErrorMargin = 25f)
 
         val start = (car.pos + car.vel * DT).flat()
         val startDir = car.ori.forward.dir2D()
@@ -85,7 +85,7 @@ class AAALAStrike(
                 data.bot.drive.towards(path.start2, Car.MAX_THROTTLE_SPEED, 100)
             }
             1 -> {
-                if (posSoon2D.dist(path.start2) <= 1.5f * EPSILON) {
+                if (posSoon2D.dist(path.start2) - path.speedAtStart2 * 8f/120f <= EPSILON) {
                     phase = 2
                 }
 
