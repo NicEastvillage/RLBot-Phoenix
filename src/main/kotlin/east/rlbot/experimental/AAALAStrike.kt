@@ -5,6 +5,7 @@ import east.rlbot.data.AdjustableAimedFutureBall
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
 import east.rlbot.data.DataPack
+import east.rlbot.maneuver.strike.DodgeStrikeDodge
 import east.rlbot.maneuver.strike.Strike
 import east.rlbot.maneuver.strike.StrikeFactory
 import east.rlbot.util.DT
@@ -19,6 +20,7 @@ class AAALAStrike(
     override var done: Boolean = false
 
     val aaaala: AdjustableAAALA
+    val dodge = DodgeStrikeDodge(aimedBall)
 
     var init = false
     var startTime = 0f
@@ -51,7 +53,7 @@ class AAALAStrike(
             startTime = data.match.time
         }
 
-        aimedBall.adjust()
+        aimedBall.adjust(allowErrorMargin = 25f)
 
         val start = (car.pos + car.vel * DT).flat()
         val startDir = car.ori.forward.dir2D()
@@ -105,6 +107,9 @@ class AAALAStrike(
             controls.withThrottle(0.2f)
             controls.withBoost(false)
         }
+
+        if (dodge.canBegin(data))
+            data.bot.maneuver = dodge
 
         return controls
     }
