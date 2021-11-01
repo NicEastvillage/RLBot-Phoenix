@@ -1,11 +1,14 @@
 package east.rlbot.maneuver.strike
 
-import east.rlbot.BaseBot
 import east.rlbot.OutputController
-import east.rlbot.data.*
+import east.rlbot.data.AdjustableAimedFutureBall
+import east.rlbot.data.Ball
+import east.rlbot.data.Car
+import east.rlbot.data.DataPack
 import east.rlbot.maneuver.DodgeFinish
 import east.rlbot.math.Mat3
 import east.rlbot.math.OrientedCube
+import east.rlbot.math.Vec3
 import east.rlbot.simulation.JumpModel
 import east.rlbot.simulation.Physics.GRAVITY
 import east.rlbot.util.DT
@@ -16,10 +19,10 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class AerialStrike(
-    interceptBall: AdjustableFutureBall,
+    aimedBall: AdjustableAimedFutureBall,
     var doSecondJump: Boolean,
     val doDodgeStrike: Boolean,
-) : Strike(interceptBall) {
+) : Strike(aimedBall) {
 
     init {
         assert(doDodgeStrike && doSecondJump) { "Can't do two jumps and dodge" }
@@ -46,9 +49,9 @@ class AerialStrike(
         val up = car.ori.up
         val controls = OutputController()
 
-        interceptBall.adjust(car.pos.dist(interceptBall.pos) / 60f)
+        aimedBall.adjust(car.pos.dist(aimedBall.pos) / 60f)
 
-        val timeLeft = interceptBall.time - now
+        val timeLeft = aimedBall.time - now
         var expectedPos = car.pos + car.vel * timeLeft + GRAVITY * timeLeft.pow(2) * 0.5f + car.vel * DT
         var expectedVel = car.vel + GRAVITY * timeLeft
 
@@ -101,10 +104,11 @@ class AerialStrike(
             }
         }
 
-        val shootDirection = car.pos.dirTo(interceptBall.pos).flat()
+        // TODO Use aim cone from aimedBall
+        val shootDirection = car.pos.dirTo(aimedBall.pos).flat()
         // TODO Consider ball velocity in offset
-        val desiredPos = interceptBall.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
-        val desiredOri = Mat3.lookingAt(desiredPos, interceptBall.pos, up)
+        val desiredPos = aimedBall.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
+        val desiredOri = Mat3.lookingAt(desiredPos, aimedBall.pos, up)
 
         val posDelta = desiredPos - expectedPos
         val posDeltaDir = posDelta.dir()
@@ -118,8 +122,8 @@ class AerialStrike(
                 jumpPauseCounter += 1
             } else {
                 // TODO find better conditions to start the dodge
-                if (timeLeft <= 1 / 60f && posDelta.magSqr() < 30 * 30) {
-                    data.bot.maneuver = DodgeFinish(interceptBall.pos)
+                if (timeLeft <= 3 / 60f && posDelta.magSqr() < 30 * 30) {
+                    data.bot.maneuver = DodgeFinish(aimedBall.pos)
                     return data.bot.maneuver!!.exec(data)!!
                 }
             }
@@ -130,7 +134,7 @@ class AerialStrike(
             val scale = if (jumping) 0.5f else 1f // Slower rotation during jumping
 
             val pd = if (bigPosDelta)
-                data.bot.fly.align(Mat3.lookingInDir(posDelta))
+                data.bot.fly.align(Mat3.lookingInDir(posDelta * Vec3(1f, 1f, 1.02f)))
             else
                 data.bot.fly.align(desiredOri)
 
@@ -148,7 +152,7 @@ class AerialStrike(
             }
         }
 
-        done = !interceptBall.valid || // Ball prediction changed
+        done = !aimedBall.valid || // Ball prediction changed
                 timeLeft <= -0.2f ||
                 (car.wheelContact && now - beginTime > 0.1f) // We landed after jumping
         if (done) {
@@ -168,18 +172,18 @@ class AerialStrike(
     }
 
     companion object Factory : StrikeFactory {
-        override fun tryCreate(bot: BaseBot, ball: FutureBall): Strike? {
-            val car = bot.data.me
+        override fun tryCreate(data: DataPack, aimedBall: AdjustableAimedFutureBall): Strike? {
+            val car = data.me
             if (car.boost < 20) return null
 
             if (car.wheelContact && car.timeWithWheelContact < 8 * DT) return null // We just landed
-            if (ball.pos.z < JumpModel.single.maxHeight() + 2 * Ball.RADIUS) return null
+            if (aimedBall.pos.z < JumpModel.single.maxHeight() + 2 * Ball.RADIUS) return null
 
-            val localPos = car.toLocal(ball.pos)
+            val localPos = car.toLocal(aimedBall.pos)
             if (localPos.x < 2400 && 0.008f * localPos.x.pow(1.4f) < abs(localPos.y)) return null // https://www.desmos.com/calculator/clgzwkpan1
 
             val up = car.ori.up
-            val timeLeft = ball.time - bot.data.match.time
+            val timeLeft = aimedBall.time - data.match.time
             val dodgePossible = timeLeft < Car.MAX_JUMP_HOLD_TIME + 1.25 && car.wheelContact // TODO Replace wheelcontact with hasDoubleJump
             val scenarios = if (dodgePossible) listOf(true, false) else listOf(false)
 
@@ -204,10 +208,10 @@ class AerialStrike(
                     }
                 }
 
-                val shootDirection = car.pos.dirTo(ball.pos).flat()
+                val shootDirection = car.pos.dirTo(aimedBall.pos).flat()
                 // TODO Consider ball velocity in offset
-                val desiredPos = ball.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
-                val desiredOri = Mat3.lookingAt(desiredPos, ball.pos, up)
+                val desiredPos = aimedBall.pos - shootDirection * (Ball.RADIUS + car.hitbox.size.x / 2f)
+                val desiredOri = Mat3.lookingAt(desiredPos, aimedBall.pos, up)
 
                 val posDelta = desiredPos - expectedPos
                 val posDeltaDir = posDelta.dir()
@@ -233,7 +237,7 @@ class AerialStrike(
                 val realisticSpeed = velEstimate.mag() < Car.MAX_SPEED
 
                 if (enoughTime && enoughBoost && realisticSpeed)
-                    return AerialStrike(ball.adjustable(), !doDodge, doDodge)
+                    return AerialStrike(aimedBall, !doDodge, doDodge)
             }
 
             return null

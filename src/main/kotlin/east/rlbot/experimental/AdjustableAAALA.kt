@@ -1,27 +1,25 @@
 package east.rlbot.experimental
 
 import east.rlbot.data.Car
+import east.rlbot.data.DataPack
 import east.rlbot.math.Vec3
-import east.rlbot.simulation.turnRadius
 import east.rlbot.util.DebugDraw
 import east.rlbot.util.half
 import java.awt.Color
 
 class AdjustableAAALA(
-    start: Vec3,
-    startDir: Vec3,
-    startSpeed: Float,
-    boostTotal: Float,
-    end: Vec3,
-    endDir: Vec3,
+    var start: Vec3,
+    var startDir: Vec3,
+    var startSpeed: Float,
+    var boostTotal: Float,
+    var end: Vec3,
+    var endDir: Vec3,
     iterations: Int=35,
 ) {
 
     private val variants: List<AAALAVariant>
 
     init {
-
-        val initRadius2 = turnRadius(1000f)
 
         // sign1, sign2, doBoost
         val setups = listOf(
@@ -51,7 +49,7 @@ class AdjustableAAALA(
         }
     }
 
-    fun draw(draw: DebugDraw) {
+    fun draw(data: DataPack, draw: DebugDraw) {
         val colors = listOf(
             Color.WHITE,
             Color.GREEN.half(),
@@ -76,6 +74,11 @@ class AdjustableAAALA(
                     path.end2.withZ(Car.REST_HEIGHT),
                 )
             )
+            if (colors[i] == Color.WHITE) {
+                //draw.string3D(path.end1.withZ(25), "${path.arc1Duration}")
+                //draw.string3D(path.start2.withZ(25), "${path.arc1Duration + path.straightDuration}")
+                draw.string3D(path.end2.withZ(25), "${data.match.time + path.duration}")
+            }
         }
     }
 
@@ -90,6 +93,13 @@ class AdjustableAAALA(
         endDir: Vec3,
         iterations: Int = 3,
     ) {
+        this.start = start
+        this.startDir = startDir
+        this.startSpeed = startSpeed
+        this.boostTotal = boostTotal
+        this.end = end
+        this.endDir = endDir
+
         for (variant in variants) {
             variant.adjust(
                 start,

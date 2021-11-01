@@ -126,7 +126,8 @@ class AAALAVariant(
                 radius2,
                 angle1,
                 time1,
-                time1 + driveRes.timeSpent + time2,
+                driveRes.timeSpent,
+                time2,
                 driveRes.boostUsed,
                 driveRes.endSpeed,
             )

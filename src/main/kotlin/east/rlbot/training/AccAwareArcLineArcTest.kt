@@ -2,11 +2,14 @@ package east.rlbot.training
 
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
+import east.rlbot.data.AdjustableAimedFutureBall
 import east.rlbot.data.Arena
 import east.rlbot.data.Ball
 import east.rlbot.data.Car
-import east.rlbot.experimental.AccAwareArcLineStrike
+import east.rlbot.experimental.AAALAStrike
+import east.rlbot.math.AimCone
 import east.rlbot.math.Vec3
+import east.rlbot.simulation.BallPredictionManager
 import east.rlbot.util.PIf
 import rlbot.cppinterop.RLBotDll
 import rlbot.gamestate.*
@@ -18,13 +21,13 @@ import kotlin.random.Random
 
 class AccAwareArcLineArcTest : Training {
 
-    private val INTERVAL = 13f
+    private val INTERVAL = 1.5f
     private val CREATE_TICK_DELAY = 3
 
     var next = 7f
     var counter = -2
 
-    private var strike: AccAwareArcLineStrike? = null
+    private var strike: AAALAStrike? = null
 
     override fun exec(bot: BaseBot): OutputController? {
         if (bot.index != 0) return null
@@ -34,16 +37,19 @@ class AccAwareArcLineArcTest : Training {
             next = bot.data.match.time + INTERVAL
             counter = CREATE_TICK_DELAY
 
-            val ballX = - 1000 + 2000 * Random.nextFloat()
+            val ballX = -1000 + 2000 * Random.nextFloat()
             val ballY = 0.9f * Arena.LENGTH2 * Random.nextFloat()
             val ballPos = Vec3(ballX, ballY, Ball.RADIUS + 1f)
 
-            val carX = min(0.9f * (- Arena.WIDTH2 + Arena.WIDTH * Random.nextFloat()), ballX + 4000f)
-            val carY = 0.9f * (- Arena.LENGTH2 + Arena.LENGTH * Random.nextFloat())
+            val ballYaw = 2 * PIf * Random.nextFloat()
+            val ballVel = (Vec3(cos(ballYaw), sin(ballYaw), 0f) * 1500f * Random.nextFloat()).withZ(-800 + 1600 * Random.nextFloat())
+
+            val carX = min(0.9f * (-Arena.WIDTH2 + Arena.WIDTH * Random.nextFloat()), ballX + 4000f)
+            val carY = 0.9f * (-Arena.LENGTH2 + Arena.LENGTH * Random.nextFloat())
             val carPos = Vec3(carX, carY, Car.REST_HEIGHT + 1f)
 
-            val yaw = 2 * PIf * Random.nextFloat()
-            val vel = Vec3(cos(yaw), sin(yaw), 0f) * 1400f * Random.nextFloat()
+            val carYaw = 2 * PIf * Random.nextFloat()
+            val carVel = Vec3(cos(carYaw), sin(carYaw), 0f) * 1400f * Random.nextFloat()
 
             val gameState = GameState()
                 .withCarState(
@@ -52,8 +58,8 @@ class AccAwareArcLineArcTest : Training {
                         .withPhysics(
                             PhysicsState()
                                 .withLocation(carPos.toDesired())
-                                .withVelocity(vel.toDesired())
-                                .withRotation(DesiredRotation(0f, yaw, 0f))
+                                .withVelocity(carVel.toDesired())
+                                .withRotation(DesiredRotation(0f, carYaw, 0f))
                                 .withAngularVelocity(Vec3.ZERO.toDesired())
                         )
                         .withBoostAmount(100f * Random.nextFloat())
@@ -62,7 +68,7 @@ class AccAwareArcLineArcTest : Training {
                     BallState(
                         PhysicsState()
                             .withLocation(ballPos.toDesired())
-                            .withVelocity(Vec3.ZERO.toDesired())
+                            .withVelocity(ballVel.toDesired())
                             .withAngularVelocity(Vec3.ZERO.toDesired())
                     )
                 )
@@ -70,23 +76,26 @@ class AccAwareArcLineArcTest : Training {
             RLBotDll.setGameState(gameState.buildPacket())
         }
 
-        if (counter == -1) {
-            strike = AccAwareArcLineStrike(
-                bot.data.me,
-                bot.data.ball.asFuture().adjustable(),
-                bot.data.enemyGoal.pos,
-            )
-            next = bot.data.match.time + (strike!!.aaaala.getBest()?.aaala?.duration ?: (INTERVAL - 2)) + 2
+        if (counter == -1 || strike?.done == true) {
+            val factory = AAALAStrike.Factory(bot.data.me)
+            strike = BallPredictionManager.latest?.asSequence()?.mapNotNull { ball ->
+                factory.tryCreate(bot.data, AdjustableAimedFutureBall(ball) {
+                    AimCone.atGoal(it.pos, bot.data.enemyGoal)
+                })
+            }?.firstOrNull() as AAALAStrike?
+
+            if (counter == -1)
+                next = bot.data.match.time + (strike?.aaaala?.getBest()?.aaala?.duration ?: (INTERVAL - 3f)) + 3f
         }
 
         bot.draw.color = Color.WHITE
-        strike?.aaaala?.draw(bot.draw)
+        strike?.aaaala?.draw(bot.data, bot.draw)
 
         counter--
 
         val output = strike?.exec(bot.data)
 
-        return if (strike?.carIndex == 0) {
+        return if (strike?.car == bot.data.me) {
             output ?: OutputController()
         } else OutputController()
     }
