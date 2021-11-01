@@ -25,7 +25,7 @@ class Recovery : Maneuver {
             rb = Physics.fall(rb, 0.075f)
             if (!Arena.SDF.contains(rb.pos)) {
                 val normal = Arena.SDF.normal(prev.pos)
-                val right = prev.vel cross normal
+                val right = prev.vel.dir() cross normal
                 val forward = normal cross right
                 val ori = Mat3(forward, right, normal)
                 data.bot.draw.orientedOrigin(prev.pos, ori)

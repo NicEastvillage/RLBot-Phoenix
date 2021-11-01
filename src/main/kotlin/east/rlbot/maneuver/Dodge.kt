@@ -17,7 +17,7 @@ class Dodge(
 class DodgeFinish(
     target: Vec3?,
     secondJumpDuration: Float = 0.08f,
-    secondPauseDuration: Float = 0.37f,
+    secondPauseDuration: Float = 0.42f,
 ) : SteppedManeuver(
     TimedOutputManeuver(secondJumpDuration) { data ->
         if (target == null) {

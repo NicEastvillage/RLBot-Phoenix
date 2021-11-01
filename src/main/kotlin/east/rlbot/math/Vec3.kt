@@ -9,7 +9,7 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
 
     constructor(flatVec: rlbot.flat.Vector3): this(flatVec.x(), flatVec.y(), flatVec.z())
 
-    val isZero = (x == 0 && y == 0 && z == 0)
+    val isZero = mag() < 1e-07
 
     operator fun plus(other: Vec3): Vec3 {
         return Vec3(x + other.x, y + other.y, z + other.z)
