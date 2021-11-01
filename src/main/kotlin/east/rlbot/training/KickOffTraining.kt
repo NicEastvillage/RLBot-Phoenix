@@ -3,15 +3,12 @@ package east.rlbot.training
 import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.Arena
-import east.rlbot.data.Goal
-import east.rlbot.data.Team
 import east.rlbot.math.Vec3
 import rlbot.cppinterop.RLBotDll
 import rlbot.gamestate.BallState
-import rlbot.gamestate.CarState
 import rlbot.gamestate.GameState
 import rlbot.gamestate.PhysicsState
-import kotlin.random.Random
+import kotlin.math.sign
 
 class KickOffTraining : Training {
 
@@ -39,7 +36,7 @@ class KickOffTraining : Training {
                     .withBallState(
                         BallState(
                             PhysicsState()
-                                .withLocation(Vec3(y=Arena.LENGTH2 + 150, z=120).toDesired())
+                                .withLocation(Vec3(y= (Arena.LENGTH2 + 150) * bot.data.ball.pos.y.sign, z=120).toDesired())
                         )
                     )
 
