@@ -36,7 +36,7 @@ class KickOffTraining : Training {
                     .withBallState(
                         BallState(
                             PhysicsState()
-                                .withLocation(Vec3(y= (Arena.LENGTH2 + 150) * bot.data.ball.pos.y.sign, z=120).toDesired())
+                                .withLocation(Vec3(y= (Arena.LENGTH2 + 150) * (bot.data.ball.pos.y + 0.001).sign, z=120).toDesired())
                         )
                     )
 

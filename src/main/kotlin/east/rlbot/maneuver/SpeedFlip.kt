@@ -5,6 +5,7 @@ import east.rlbot.data.Car
 import east.rlbot.data.DataPack
 import east.rlbot.math.Vec3
 import east.rlbot.simulation.turnRadius
+import java.awt.Color
 
 /**
  * A fast diagonal dodge that cancels the forward rotation for more speed.
@@ -23,10 +24,14 @@ class SpeedFlip(val target: Vec3) : Maneuver {
         if (startTime < 0) {
             // Speed flips can only be performed while looking (almost) in the target direction
             // Are we looking in the right direction? Otherwise adjust
-            val ang = 0.09f * car.forwardSpeed() / turnRadius(car.forwardSpeed())
-            val leftDir = dir.rotate2D(ang)
-            val rightDir = dir.rotate2D(-ang)
+            val ang = 0.08f * car.forwardSpeed() / turnRadius(car.forwardSpeed())
+            val leftDir = dir.rotate2D(-ang)
+            val rightDir = dir.rotate2D(ang)
             val closest: Vec3
+
+            data.bot.draw.line(car.pos, car.pos + leftDir * 200, Color.GREEN)
+            data.bot.draw.line(car.pos, car.pos + rightDir * 200, Color.MAGENTA)
+            data.bot.draw.line(car.pos, car.pos + car.ori.forward * 200, Color.WHITE)
 
             if (car.vel dot leftDir > car.vel dot rightDir) {
                 closest = leftDir
@@ -52,9 +57,9 @@ class SpeedFlip(val target: Vec3) : Maneuver {
         val elapsed = data.match.time - startTime
         val controls = OutputController()
 
-        if (0 < elapsed && elapsed < 0.1f) {
+        if (0 < elapsed && elapsed < 0.09f) {
             controls.withJump()
-        } else if (0.12 < elapsed && elapsed < 0.15) {
+        } else if (0.12 < elapsed && elapsed < 0.14) {
             controls.withJump()
             controls.withPitch(-1f)
             controls.withRoll(0.95f * side)
@@ -62,12 +67,13 @@ class SpeedFlip(val target: Vec3) : Maneuver {
             // Cancel the forward part of the dodge, and continue air rolling
             controls.withPitch(1f)
             controls.withRoll(0.95f * side)
-        } else if (.65 < elapsed && elapsed < 0.9) {
+        } else if (0.65 < elapsed && elapsed < 1.0) {
             // Land safely on the ground by turning slightly and holding drift
             controls.withPitch(1f)
-            controls.withSlide()
             controls.withYaw(side)
-        } else if (0.9 < elapsed) {
+            controls.withRoll(side)
+            controls.withSlide()
+        } else if (1.0 < elapsed) {
             done = true
         }
 

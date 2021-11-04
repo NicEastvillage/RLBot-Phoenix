@@ -148,7 +148,7 @@ class Vec3(x: Number = 0, y: Number = 0, z: Number = 0): rlbot.vector.Vector3(x.
 
     fun perp2D(): Vec3 = Vec3(-y, x, z)
 
-    fun rotate2D(angle: Float) = Vec3(cos(angle) * x, sin(angle) * y, z)
+    fun rotate2D(angle: Float) = Vec3(cos(angle) * x - sin(angle) * y, sin(angle) * x + cos(angle) * y, z)
 
     fun rotate(axis: Vec3, angle: Float) = Mat3.rotationMatrix(axis.dir(), angle) dot this
 
