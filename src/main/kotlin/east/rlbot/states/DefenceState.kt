@@ -24,7 +24,8 @@ class DefenceState : UtilityState {
             data.bot.drive.towards(
                 data.myGoal.pos,
                 targetSpeed = Car.MAX_SPEED,
-                boostPreservation = 100,
+                boostPreservation = 80,
+                allowDodges = true
             )
     }
 }

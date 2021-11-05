@@ -4,9 +4,12 @@ import east.rlbot.BaseBot
 import east.rlbot.OutputController
 import east.rlbot.data.BoostPadManager
 import east.rlbot.data.Car
+import east.rlbot.maneuver.SpeedFlip
 import east.rlbot.math.Vec3
 import east.rlbot.math.tangentPoint
-import east.rlbot.simulation.*
+import east.rlbot.simulation.DriveModel
+import east.rlbot.simulation.timeSpentTurning
+import east.rlbot.simulation.turnRadius
 import east.rlbot.util.PIf
 import java.awt.Color
 import kotlin.math.abs
@@ -19,7 +22,8 @@ class SimpleDriving(val bot: BaseBot) {
     fun towards(
             target: Vec3,
             targetSpeed: Float,
-            boostPreservation: Int // don't use boost if we are below this amount
+            boostPreservation: Int, // don't use boost if we are below this amount
+            allowDodges: Boolean,
     ): OutputController {
 
         val controls = OutputController()
@@ -45,6 +49,8 @@ class SimpleDriving(val bot: BaseBot) {
             if (targetSpeed > 1410 && currentSpeed + 60 < targetSpeed && facingTarget && car.boost > boostPreservation) {
                 controls.withBoost(true)
             }
+            if (allowDodges && currentSpeed + 600 < targetSpeed && car.isUpright && facingTarget && car.timeWithWheelContact > 0.08 && currentSpeed in 1200f..1600f && car.pos.dist(target) > 1750)
+                bot.maneuver = SpeedFlip(target, boostPreservation)
         } else {
             // We are going too fast
             val extraSpeed = currentSpeed - targetSpeed
@@ -72,7 +78,7 @@ class SimpleDriving(val bot: BaseBot) {
             score
         }
         if (bestPad != null) bot.draw.line(car.pos, bestPad.pos, Color.GREEN)
-        return towards(bestPad?.pos ?: target, targetSpeed, boostPreservation)
+        return towards(bestPad?.pos ?: target, targetSpeed, boostPreservation, allowDodges = true)
     }
 
     /**

@@ -11,7 +11,10 @@ import java.awt.Color
  * A fast diagonal dodge that cancels the forward rotation for more speed.
  * Inspired by RedUtils by CodeRed: https://github.com/ItsCodeRed/RedUtils/blob/master/RedUtils/Actions/SpeedFlip.cs
  */
-class SpeedFlip(val target: Vec3) : Maneuver {
+class SpeedFlip(
+    val target: Vec3,
+    val boostPreservation: Int,
+) : Maneuver {
     override var done = false
 
     private var startTime = -1f
@@ -49,7 +52,7 @@ class SpeedFlip(val target: Vec3) : Maneuver {
 
             if (startTime < 0) {
                 // If startTime is still -1 we need to steer towards the closest dodge dir
-                return data.bot.drive.towards(car.pos + closest * 1000, Car.MAX_SPEED, 100)
+                return data.bot.drive.towards(car.pos + closest * 1000, Car.MAX_SPEED, boostPreservation, allowDodges = false)
             }
 
         }
@@ -76,6 +79,8 @@ class SpeedFlip(val target: Vec3) : Maneuver {
         } else if (1.0 < elapsed) {
             done = true
         }
+
+        controls.withBoost(car.boost > boostPreservation)
 
         return controls
     }

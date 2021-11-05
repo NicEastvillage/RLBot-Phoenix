@@ -82,14 +82,14 @@ class AAALAStrike(
                     phase = 1
                 }
 
-                data.bot.drive.towards(path.start2, Car.MAX_THROTTLE_SPEED, 100)
+                data.bot.drive.towards(path.start2, Car.MAX_THROTTLE_SPEED, 100, allowDodges = false)
             }
             1 -> {
                 if (posSoon2D.dist(path.start2) - path.speedAtStart2 * 8f/120f <= EPSILON) {
                     phase = 2
                 }
 
-                data.bot.drive.towards(path.start2, path.speedAtStart2, 0)
+                data.bot.drive.towards(path.start2, path.speedAtStart2, 0, allowDodges = false)
             }
             else -> {
                 if (posSoon2D.dist(path.start2) <= EPSILON) {
@@ -97,7 +97,7 @@ class AAALAStrike(
                     done = true
                 }
 
-                data.bot.drive.towards(path.end2, path.speedAtStart2, 100)
+                data.bot.drive.towards(path.end2, path.speedAtStart2, 100, allowDodges = false)
             }
         }
 

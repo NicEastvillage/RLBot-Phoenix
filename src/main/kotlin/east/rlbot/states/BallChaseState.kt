@@ -29,14 +29,16 @@ class BallChaseState : UtilityState {
             return data.bot.drive.towards(
                     pred.where,
                     targetSpeed = speed,
-                    boostPreservation = 0
+                    boostPreservation = 0,
+                    allowDodges = true
             )
 
         } else {
             return data.bot.drive.towards(
                     data.ball.pos,
                     targetSpeed = Car.MAX_SPEED,
-                    boostPreservation = 0
+                    boostPreservation = 0,
+                    allowDodges = true
             )
         }
     }

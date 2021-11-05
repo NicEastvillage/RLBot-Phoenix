@@ -52,7 +52,7 @@ class DodgeStrike(
         data.bot.draw.crossAngled(aimedBall.pos, 85f, Color.MAGENTA)
         data.bot.draw.line(car.pos, arrivePos, Color.CYAN)
 
-        return data.bot.drive.towards(arrivePos, speed, 0)
+        return data.bot.drive.towards(arrivePos, speed, 0, allowDodges = false)
     }
 
     companion object Factory : StrikeFactory {
